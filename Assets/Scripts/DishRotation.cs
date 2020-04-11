@@ -9,9 +9,15 @@ public class DishRotation : MonoBehaviour,
     public GameObject petridish;
     private Quaternion targetAngle;
 
+    public Texture2D defaultCursor;
+    public Texture2D openHandCursor;
+    public Texture2D closedHandCursor;
+    private CursorMode mode = CursorMode.Auto;
+    private Vector2 hotSpot = Vector2.zero;
     public void OnPointerEnter(PointerEventData eventData)
     {
         //Change cursor texture to hand or something
+        //Cursor.SetCursor(openHandCursor, hotSpot, mode);
     }
 
     public void OnPointerExit(PointerEventData eventData)
