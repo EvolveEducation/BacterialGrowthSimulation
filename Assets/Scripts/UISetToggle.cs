@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-using Image = UnityEngine.UI.Image;
+using UnityEngine.UI;
 
 public class UISetToggle : MonoBehaviour
 {
@@ -20,14 +19,29 @@ public class UISetToggle : MonoBehaviour
         on = 0;
         lastChild = 0;
         tabs = GetComponentsInChildren<Image>();
-        tabs[on].color = selected;
+        if (panelParent != null)
+        {
+            tabs[on].color = selected;
+        }
     }
-    
-    public void SetActive(int i)
+
+    public void SwitchToggle(int i)
     {
         tabs[on].color = deselected;
         on = i;
         tabs[on].color = selected;
+    }
+
+    public void SwitchTextColor(int i)
+    {
+        tabs[on].transform.GetChild(0).GetComponentInChildren<Text>().color = Color.black;
+        SwitchToggle(i);
+        tabs[on].transform.GetChild(0).GetComponentInChildren<Text>().color = Color.white;
+    }
+
+    public void SetActivePanel(int i)
+    {
+        SwitchToggle(i);
 
         switch (on)
         {
