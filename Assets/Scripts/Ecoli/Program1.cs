@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace EcoliPlay
 {
+
     class Program
     {
         static void Main(string[] args)
@@ -17,21 +18,9 @@ namespace EcoliPlay
             
 
             //needs error checking to address for square vs circular grid
+            //create a colony object
             static int[,] newLoc(bool[,] cellloc)
             {
-                //This chunk is code I got rid of (was used to fill the 2 arrays)
-                //    int n = 0;
-                //    int m = 0;
-                //    while (n < 600)
-                //    {
-                //        //for each loop repeat, add a dict entry where key is n (location) and value is cell presence (empty or false is starting value)
-                //        n = n + 1;
-                //    }
-                //    while (m < 600)
-                //    {
-                //        //for each loop repeat, add a dict entry where key is n (location) and value is cell presence (empty or false is starting value)
-                //        m = m + 1;
-                //    }
 
                 Random rand = new Random();
                 int xloc = rand.Next(0, 600);
@@ -62,7 +51,6 @@ namespace EcoliPlay
             }
 
 
-
             void cell(int[,] location)
             {
                 Console.WriteLine("cell drawn");
@@ -70,8 +58,9 @@ namespace EcoliPlay
                 //draws a cell
                 //this has to work with unity functionality to make a circular cell appear
             }
-
-
+            
+            //all the colony object check borders
+            //all the colony objects grow
             //needs error checking to address for circular vs square grid
             void grow(int[,] xandy, bool[,] celloc)
             {
@@ -139,6 +128,7 @@ namespace EcoliPlay
                 //this function checks the locs arrays for cells
                 //constructs an array with the locations of the existing cells
                 //was neeed nor an earlier version of the code, could probably be deleted now
+                //make this so that it removes the "false" entries of the cell location array
             }
 
             //this will be changed to recieve info from gui
@@ -152,7 +142,7 @@ namespace EcoliPlay
             Console.Write("Enter digit for hundred minutes' growth. (ex. 1=100 minutes, 2=200 minutes): ");
             time = int.Parse(Console.ReadLine());
 
-
+            //getter for the array so it can be exported/returned (celllist possible)
         }
     }
 }
