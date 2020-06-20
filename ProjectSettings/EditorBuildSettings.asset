@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/AMESExperiment.unity
+    guid: 37099bbdc4f0c47d0952e9aaa159582e
   m_configObjects: {}
