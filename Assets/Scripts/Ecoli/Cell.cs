@@ -25,11 +25,13 @@ namespace Ecoli2
 
     class cell
     {
-        private int[] location;
-        private bool[,] neighbors = new bool[3, 3];
+        private int[,] location;
+        //private bool[,] neighbors = new bool[3, 3];
         private bool active;
 
-        public cell(int[] loc, bool[,] cellloc)
+
+
+        public cell(int[,] loc)
         {
             location = loc;
         }
@@ -49,12 +51,15 @@ namespace Ecoli2
                 return this.location;
             }
         }
-        public void setNeighbors(int[] loc, bool[,] cellloc)
+        public void setNeighbors(int[,] loc, bool[,] cellloc)
         {
             int x;
             int y;
             x = loc[0];
             y = loc[1];
+
+            DoubleLinkedList neighbors = new DoubleLinkedList();
+            neighbors.InsertLast(bool there, int [,] loc );
 
             this.neighbors[0, 0] = cellloc[x - 1, y + 1];
             this.neighbors[0, 1] = cellloc[x, y + 1];
@@ -65,7 +70,6 @@ namespace Ecoli2
             this.neighbors[2, 0] = cellloc[x - 1, y - 1];
             this.neighbors[2, 1] = cellloc[x, y - 1];
             this.neighbors[2, 2] = cellloc[x + 1, y - 1];
-
         }
 
         //true=active
@@ -103,12 +107,52 @@ namespace Ecoli2
         public void grow()
         {
             int[] loc = this.getLocation;
-            List<int[,]> arrayList = new List<int[,]>();
             foreach (bool spot in this.neighbors)
             {
                 if (spot == false)
                 {
-                    arrayList.Add(spot);
+                    index = this.neighbor.IndexOf(spot);
+                    spot = true;
+                    switch (index)
+                    {
+                        case [0, 0]:
+                            cellloc[x - 1, y + 1] = true;
+                            return cellloc[x - 1, y + 1];
+                            break;
+                        case [0, 1]:
+                            cellloc[x, y + 1] = true;
+                            return cellloc[x, y + 1];
+                            break;
+                        case [0, 2]:
+                            cellloc[x + 1, y + 1] = true;
+                            return cellloc[x + 1, y + 1];
+                            break;
+                        case [1, 0]:
+                            cellloc[x - 1, y] = true;
+                            return cellloc[x - 1, y];
+                            break;
+                        case [1, 1]:
+                            cellloc[x, y] = true; //center
+                            return cellloc[x, y];
+                            break;
+                        case [1, 2]:
+                            cellloc[x + 1, y] = true;
+                            return cellloc[x + 1, y];
+                            break;
+                        case [2, 0]:
+                            cellloc[x - 1, y - 1] = true;
+                            return cellloc[x - 1, y - 1];
+                            break;
+                        case [2, 1]:
+                            cellloc[x, y - 1] = true;
+                            return cellloc[x, y - 1];
+                            break;
+                        case [2, 2]:
+                            cellloc[x + 1, y - 1] = true;
+                            return cellloc[x + 1, y - 1];
+                            break;
+                    }
+                    break;
                 }
             }
         }
