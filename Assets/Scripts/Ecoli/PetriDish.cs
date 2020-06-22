@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Cell;
 
 public class PetriDish
 {
@@ -12,7 +11,7 @@ public class PetriDish
 
 
 
-    public PetriDish(int numStart, int time)
+    PetriDish(int numStart, int time)
     {
         this.growTime = time;
         i = 0;
@@ -43,7 +42,7 @@ public class PetriDish
     }
 
 
-    public void TimeToGrow()
+    void TimeToGrow()
     {
         i = 0;
         while (i <= this.growTime)
