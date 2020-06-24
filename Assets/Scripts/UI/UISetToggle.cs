@@ -13,8 +13,7 @@ public class UISetToggle : MonoBehaviour
     private int on;
     private int lastChild;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         on = 0;
         lastChild = 0;
@@ -22,6 +21,7 @@ public class UISetToggle : MonoBehaviour
         if (panelParent != null)
         {
             tabs[on].color = selected;
+            SwitchTextColor(on);
         }
     }
 

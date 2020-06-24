@@ -33,9 +33,9 @@ public class Colony
             {
                 activeCells.Remove(cell);
             } else {
-                StartCoroutine(cell.Grow((c) => {
-                    activeCells.Add(c);
-                }));
+                //StartCoroutine(cell.Grow((c) => {
+                //    activeCells.Add(c);
+               // }));
             }
         }
     }

@@ -3,12 +3,15 @@ using Random = System.Random;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Petridish : MonoBehaviour
 {
-    //Variables
-    public GameObject start;
-    public GameObject mutagen1;
+//Variables
+    public GameObject petriDish; 
+    public Button start;
+    public ToggleGroup mutagens;
+
     private int dishRadius;
     private bool[,] cellLocations;
     private int startingCells;
