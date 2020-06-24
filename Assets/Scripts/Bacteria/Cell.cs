@@ -1,4 +1,5 @@
 ﻿using System;
+using Random = System.Random;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -6,11 +7,10 @@ using UnityEngine;
 
 public class Cell
 {
-    //Variables//
-    private bool active;
+//Variables//
     private int x;
     private int y;
-    private HashSet<Cell> neighbours;
+    private List<int[]> neighbours;
 
     /*
      * Constructor for the cell class.
@@ -20,8 +20,7 @@ public class Cell
     {
         this.x = x;
         this.y = y;
-        active = true;
-        neighbours = new HashSet<Cell>();
+        neighbours = new List<int[]>();
         FindAvailableSpace();
     }
 
@@ -37,13 +36,7 @@ public class Cell
         get { return y; }
     }
 
-    public bool Active
-    {
-        get { return active; }
-        set { active = value; }
-    }
-
-    public HashSet<Cell> AvailableSpace
+    public List<int[]> AvailableSpace
     {
         get { return neighbours; }
     }
@@ -55,12 +48,14 @@ public class Cell
      * If no cell can be made the cell is listed as inactive and nothing is sent back.
      * @param available a 2d array of locations that are available for growth
      */
-    public IEnumerator Grow(int[,] available, System.Action<Cell> callback)
+    public IEnumerator Grow(System.Action<Cell> callback)
     {
-        RandomNumberGenerator rng = new RandomNumberGenerator.create();
-        int x = rng.GetInt32(available.Length);
-        int y = rng.GetInt32(available.Length);
-        Cell newCell = new Cell(x, y);
+        Random rng = new Random();
+        int randomLocation = rng.Next(0, neighbours.Count);
+        int[] location = neighbours[randomLocation];
+        Petridish.Instance.CellLocations[location[0], location[1]] = true;
+        Cell newCell = new Cell(location[0], location[1]);
+        neighbours.RemoveAt(randomLocation);
         yield return newCell;
         callback(newCell);
     }
@@ -72,6 +67,15 @@ public class Cell
      */
     private void FindAvailableSpace()
     {
-        
+        for (int i = x-1; i < 3; i++)
+        {
+            for (int j = y-1; j < 3; j++)
+            {
+                if (!Petridish.Instance.CellLocations[i, j] && Petridish.Instance.InCircle(i, j))
+                {
+                    neighbours.Add(new int[] { i, j });
+                }
+            }
+        }
     }
 }

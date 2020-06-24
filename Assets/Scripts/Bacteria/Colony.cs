@@ -1,13 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 public class Colony
 {
 //Variables//
     private Cell origin;
-    private LinkedList<Cell> activeCells;
+    private List<Cell> activeCells;
 
     /*
      * Constrcutor for the colony. Sets the origin cell and creates our list of active cells.
@@ -16,8 +16,8 @@ public class Colony
     public Colony(Cell origin)
     {
         this.origin = origin;
-        activeCells = new LinkedList<Cell>();
-        activeCells.AddFirst(this.origin);
+        activeCells = new List<Cell>();
+        activeCells.Add(this.origin);
     }
 
 
@@ -25,17 +25,16 @@ public class Colony
     /*
      * Each time cycle this is called. Emulates the growth of the colony.
      */
-    public Grow()
+    public void Grow()
     {
         foreach (Cell cell in activeCells)
         {
             if (cell.AvailableSpace.Count < 0)
             {
-                cell.Active = false;
+                activeCells.Remove(cell);
             } else {
-                StartCoroutine(cell.Grow(cell.Neighbours,
-                (cell) => {
-                    activeCells.AddLast(cell);
+                StartCoroutine(cell.Grow((c) => {
+                    activeCells.Add(c);
                 }));
             }
         }
