@@ -1,11 +1,11 @@
 ﻿using System;
-using Random = System.Random;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Threading;
+using Random = System.Random;
 
 namespace Bacteria
 {
@@ -15,16 +15,19 @@ namespace Bacteria
         public GameObject petriDish;
         public Button start;
         public ToggleGroup mutagens;
-
+        public Slider numOfCells;
+        public Text logs;
+        // public GraphAnimation graph //not sure how to call charts and graphs stuff
+        
         public static Petridish Instance { get; private set; }
         public int DishRadius { get; private set; }
         public bool[,] CellLocations { get; private set; }
 
         private int startingCells;
+        private int simulationLength;
         private int growthRate;
         private List<Colony> colonyList;
-
-
+        private CancellationTokenSource cts;
 
         //MonoBehaviour//
         void Awake()
@@ -41,13 +44,16 @@ namespace Bacteria
             DishRadius = 300;
             CellLocations = new bool[DishRadius * 2, DishRadius * 2];
             startingCells = 10;
-            growthRate = 100;
+            simulationLength = 100;
+            growthRate = 2;
             colonyList = new List<Colony>();
+            cts = new CancellationTokenSource();
         }
 
         void Start()
         {
             SpreadCells();
+            start.onClick.AddListener(SimulationStart);
         }
 
 
@@ -74,6 +80,45 @@ namespace Bacteria
 
 
         //Private Methods//
+        /*
+        * Monitors the growth of the colonies and based on the IProgress: generates new cells, 
+        * logs data, and populates the graph. Each trial is also saved to a json file.
+        */
+        private async void SimulationStart()
+        {
+            logs.text += "Simulation starting...\n";
+            //logs.text += mutagens.name + " is being used. Typical growth rate is " + mutagen.growthrate
+            Progress<List<Cell>> progress = new Progress<List<Cell>>();
+            progress.ProgressChanged += ReportProgress;
+
+            for (int i = 0; i < simulationLength; i++)
+            {
+                try
+                {
+                    await Grow(progress, cts.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    logs.text += "...Simulation Cancelled.";
+                }
+                await Task.Delay(growthRate);
+            }
+            
+
+            logs.text += "...Simulation Complete.";
+
+            //log data into json here.
+        }
+
+        /*
+         * Triggers a cancelaiton token to stop the simulation.
+         */
+        private void CancelSimulation()
+        {
+            cts.Cancel();
+        }
+
+
         /*
          * Grows each colony async in parallel. The report function will allow the cells to grow
          * on the plate dynamically and the cancelationtoken allows the user to stop the growth entirely.
@@ -108,6 +153,9 @@ namespace Bacteria
                 {
                     CellLocations[x, y] = true;
                     Colony newColony = new Colony(new Cell(x, y));
+                    
+                    //create a new instance of a prefab cell here as well
+                    
                     colonyList.Add(newColony);
                 }
                 else
@@ -115,6 +163,27 @@ namespace Bacteria
                     i--;
                 }
             }
+        }
+
+        /*
+         * Called whenever the progress has been changed; whenever a colony grows.
+         * Updates the graph, log, and petridish itself dynamically on screen. 
+         * @param sender the method that called it (unused but needed)
+         * @param cells is a list a of new cells on the petridish 
+         */
+        private void ReportProgress(object sender, List<Cell> cells)
+        {
+            logs.text += cells.Count + " new cells.\n";
+            
+            foreach (Cell cell in cells)
+            {
+                // Change this to a prefab clone for a cell 
+                GameObject c = new GameObject();
+                c.transform.parent = petriDish.transform;
+                c.transform.localPosition = new Vector2(cell.X, cell.Y);
+            }
+
+            //log graph data somehow
         }
     }
 }
