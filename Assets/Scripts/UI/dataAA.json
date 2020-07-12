@@ -1,0 +1,504 @@
+{
+    "name": "evo_AA_17:52:41",
+    "trials": [
+        {
+            "trial_id": 1,
+            "max_col_id": 7,
+            "max_sz": 3102,
+            "max_rad": 1,
+            "colonies": [
+                {
+                    "colony_id": 0,
+                    "x": 264,
+                    "y": 39,
+                    "pop": 1778,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 1,
+                    "x": 146,
+                    "y": 1,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 2,
+                    "x": 64,
+                    "y": 41,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 4,
+                    "x": 240,
+                    "y": 34,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 5,
+                    "x": 5,
+                    "y": 8,
+                    "pop": 398,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 6,
+                    "x": 183,
+                    "y": 53,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 7,
+                    "x": 96,
+                    "y": 5,
+                    "pop": 3102,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 8,
+                    "x": 160,
+                    "y": 23,
+                    "pop": 854,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 9,
+                    "x": 55,
+                    "y": 7,
+                    "pop": 779,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 10,
+                    "x": 94,
+                    "y": 8,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 11,
+                    "x": 271,
+                    "y": 22,
+                    "pop": 816,
+                    "radius": 6
+                },
+                {
+                    "colony_id": 13,
+                    "x": 55,
+                    "y": 29,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 14,
+                    "x": 127,
+                    "y": 16,
+                    "pop": 1,
+                    "radius": 1
+                }
+            ]
+        },
+        {
+            "trial_id": 2,
+            "max_col_id": 12,
+            "max_sz": 1,
+            "max_rad": 171,
+            "colonies": [
+                {
+                    "colony_id": 12,
+                    "x": 268,
+                    "y": 36,
+                    "pop": 1,
+                    "radius": 171
+                }
+            ]
+        },
+        {
+            "trial_id": 3,
+            "max_col_id": 3,
+            "max_sz": 4065,
+            "max_rad": 13,
+            "colonies": [
+                {
+                    "colony_id": 0,
+                    "x": 147,
+                    "y": 25,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 1,
+                    "x": 272,
+                    "y": 24,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 2,
+                    "x": 166,
+                    "y": 45,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 3,
+                    "x": 281,
+                    "y": 53,
+                    "pop": 4065,
+                    "radius": 13
+                },
+                {
+                    "colony_id": 4,
+                    "x": 138,
+                    "y": 25,
+                    "pop": 563,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 6,
+                    "x": 148,
+                    "y": 22,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 8,
+                    "x": 208,
+                    "y": 58,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 9,
+                    "x": 124,
+                    "y": 41,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 10,
+                    "x": 60,
+                    "y": 51,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 12,
+                    "x": 45,
+                    "y": 16,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 13,
+                    "x": 188,
+                    "y": 35,
+                    "pop": 399,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 14,
+                    "x": 151,
+                    "y": 45,
+                    "pop": 1,
+                    "radius": 1
+                }
+            ]
+        },
+        {
+            "trial_id": 4,
+            "max_col_id": 14,
+            "max_sz": 0,
+            "max_rad": 120,
+            "colonies": [
+                {
+                    "colony_id": 7,
+                    "x": 205,
+                    "y": 19,
+                    "pop": 5,
+                    "radius": 65
+                }
+            ]
+        },
+        {
+            "trial_id": 5,
+            "max_col_id": 1,
+            "max_sz": 10551,
+            "max_rad": 27,
+            "colonies": [
+                {
+                    "colony_id": 0,
+                    "x": 9,
+                    "y": 9,
+                    "pop": 780,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 1,
+                    "x": 388,
+                    "y": 32,
+                    "pop": 10551,
+                    "radius": 27
+                },
+                {
+                    "colony_id": 2,
+                    "x": 191,
+                    "y": 27,
+                    "pop": 124,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 3,
+                    "x": 41,
+                    "y": 7,
+                    "pop": 151,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 4,
+                    "x": 220,
+                    "y": 34,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 6,
+                    "x": 220,
+                    "y": 50,
+                    "pop": 51,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 7,
+                    "x": 293,
+                    "y": 9,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 8,
+                    "x": 92,
+                    "y": 25,
+                    "pop": 188,
+                    "radius": 12
+                },
+                {
+                    "colony_id": 9,
+                    "x": 326,
+                    "y": 40,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 10,
+                    "x": 115,
+                    "y": 56,
+                    "pop": 336,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 11,
+                    "x": 191,
+                    "y": 9,
+                    "pop": 80,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 12,
+                    "x": 211,
+                    "y": 48,
+                    "pop": 385,
+                    "radius": 3
+                },
+                {
+                    "colony_id": 13,
+                    "x": 209,
+                    "y": 55,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 14,
+                    "x": 121,
+                    "y": 34,
+                    "pop": 1,
+                    "radius": 1
+                }
+            ]
+        },
+        {
+            "trial_id": 6,
+            "max_col_id": 10,
+            "max_sz": 6,
+            "max_rad": 246,
+            "colonies": [
+                {
+                    "colony_id": 10,
+                    "x": 131,
+                    "y": 44,
+                    "pop": 6,
+                    "radius": 246
+                }
+            ]
+        },
+        {
+            "trial_id": 7,
+            "max_col_id": 5,
+            "max_sz": 3613,
+            "max_rad": 1,
+            "colonies": [
+                {
+                    "colony_id": 0,
+                    "x": 232,
+                    "y": 39,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 1,
+                    "x": 77,
+                    "y": 13,
+                    "pop": 1991,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 2,
+                    "x": 36,
+                    "y": 31,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 3,
+                    "x": 179,
+                    "y": 16,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 4,
+                    "x": 182,
+                    "y": 58,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 5,
+                    "x": 40,
+                    "y": 51,
+                    "pop": 3613,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 6,
+                    "x": 333,
+                    "y": 32,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 8,
+                    "x": 23,
+                    "y": 45,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 9,
+                    "x": 15,
+                    "y": 36,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 10,
+                    "x": 111,
+                    "y": 15,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 11,
+                    "x": 345,
+                    "y": 27,
+                    "pop": 16,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 14,
+                    "x": 128,
+                    "y": 2,
+                    "pop": 1,
+                    "radius": 1
+                }
+            ]
+        },
+        {
+            "trial_id": 8,
+            "max_col_id": 5,
+            "max_sz": 3133,
+            "max_rad": 1,
+            "colonies": [
+                {
+                    "colony_id": 0,
+                    "x": 251,
+                    "y": 58,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 1,
+                    "x": 302,
+                    "y": 33,
+                    "pop": 7,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 5,
+                    "x": 123,
+                    "y": 9,
+                    "pop": 3133,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 7,
+                    "x": 246,
+                    "y": 38,
+                    "pop": 1,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 11,
+                    "x": 56,
+                    "y": 20,
+                    "pop": 3,
+                    "radius": 1
+                },
+                {
+                    "colony_id": 13,
+                    "x": 277,
+                    "y": 11,
+                    "pop": 1,
+                    "radius": 1
+                }
+            ]
+        },
+        {
+            "trial_id": 9,
+            "max_col_id": 0,
+            "max_sz": 0,
+            "max_rad": 1,
+            "colonies": [
+                {
+                    "colony_id": 7,
+                    "x": 218,
+                    "y": 10,
+                    "pop": 1,
+                    "radius": 1
+                }
+            ]
+        }
+    ]
+}

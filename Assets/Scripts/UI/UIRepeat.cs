@@ -52,4 +52,10 @@ public class UIRepeat : MonoBehaviour
             }
         }
     }
+
+    public void SetNumRepetitions(int num)
+    {
+        numRepetitions = num;
+        StartCoroutine(UpdateChildren());
+    }
 }
