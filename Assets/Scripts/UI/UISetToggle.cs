@@ -15,8 +15,8 @@ public class UISetToggle : MonoBehaviour
 
     void Awake()
     {
-        on = 0;
-        lastChild = 0;
+        on = 4;
+        lastChild = 2;
         tabs = GetComponentsInChildren<Image>();
         if (panelParent != null)
         {

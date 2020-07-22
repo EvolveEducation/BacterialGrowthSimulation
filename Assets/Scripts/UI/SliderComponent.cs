@@ -8,6 +8,6 @@ public class SliderComponent : MonoBehaviour
 
     public void SetSliderValue()
     {
-        textComponent.text = slider.value.ToString();
+        textComponent.text = slider.value.ToString("0.00");
     }
 }
