@@ -12,6 +12,7 @@ namespace Bacteria
     public class Petridish : MonoBehaviour
     {
         //Variables
+        public GameObject cellPrefab;
         public GameObject petriDish;
         public Button start;
         public ToggleGroup mutagens;
@@ -43,7 +44,6 @@ namespace Bacteria
             }
             DishRadius = 300;
             CellLocations = new bool[DishRadius * 2, DishRadius * 2];
-            startingCells = 10;
             simulationLength = 100;
             growthRate = 2;
             colonyList = new List<Colony>();
@@ -52,7 +52,6 @@ namespace Bacteria
 
         void Start()
         {
-            SpreadCells();
             start.onClick.AddListener(SimulationStart);
         }
 
@@ -86,8 +85,12 @@ namespace Bacteria
         */
         private async void SimulationStart()
         {
+            startingCells = (int) numOfCells.value;
+            logs.text = "";
             logs.text += "Simulation starting...\n";
             //logs.text += mutagens.name + " is being used. Typical growth rate is " + mutagen.growthrate
+
+            SpreadCells();
             Progress<List<Cell>> progress = new Progress<List<Cell>>();
             progress.ProgressChanged += ReportProgress;
 
@@ -135,6 +138,7 @@ namespace Bacteria
                     List<Cell> newCells = await colony.GrowParallelAsync();
                     cancellationToken.ThrowIfCancellationRequested();
                     progress.Report(newCells);
+                    Debug.Log("Run");
                 });
             });
         }
@@ -153,8 +157,9 @@ namespace Bacteria
                 {
                     CellLocations[x, y] = true;
                     Colony newColony = new Colony(new Cell(x, y));
-                    
-                    //create a new instance of a prefab cell here as well
+
+                    cellPrefab.transform.position = new Vector3(x/100, 0, y/100);
+                    Instantiate(cellPrefab, petriDish.transform);
                     
                     colonyList.Add(newColony);
                 }
@@ -177,10 +182,8 @@ namespace Bacteria
             
             foreach (Cell cell in cells)
             {
-                // Change this to a prefab clone for a cell 
-                GameObject c = new GameObject();
-                c.transform.parent = petriDish.transform;
-                c.transform.localPosition = new Vector2(cell.X, cell.Y);
+                cellPrefab.transform.position = new Vector3(cell.X / 100, 0, cell.Y / 100);
+                Instantiate(cellPrefab, petriDish.transform);
             }
 
             //log graph data somehow
