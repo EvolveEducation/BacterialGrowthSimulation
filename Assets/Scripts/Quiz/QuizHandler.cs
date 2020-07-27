@@ -157,6 +157,7 @@ public class QuizHandler : MonoBehaviour
         {
             return;
         }
+        if (answerPanel.transform.childCount <= answerIndex) { return; }
         Image img = answerPanel.transform.GetChild(answerIndex).GetComponent<Image>();
         if (selected)
         {
@@ -177,7 +178,7 @@ public class QuizHandler : MonoBehaviour
         {
             if (diff > 0)
             {
-                for (int i = 0; i < diff; i++)
+                for (int i = childCount - 1; childCount - i <= diff; i--)
                 {
                     Destroy(answerPanel.transform.GetChild(i).gameObject);
                 }
