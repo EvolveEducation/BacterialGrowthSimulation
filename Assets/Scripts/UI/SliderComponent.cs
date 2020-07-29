@@ -11,7 +11,12 @@ public class SliderComponent : MonoBehaviour
     {
         if (whole)
         {
+            textComponent.text = slider.value.ToString("0");
+
         }
-        textComponent.text = slider.value.ToString("0.00");
+        else
+        {
+            textComponent.text = slider.value.ToString("0.00");
+        }
     }
 }

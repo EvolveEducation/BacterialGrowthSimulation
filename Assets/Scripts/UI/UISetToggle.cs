@@ -8,6 +8,7 @@ public class UISetToggle : MonoBehaviour
     public Color selected;
     public Color deselected;
     public GameObject panelParent;
+    public int intialOn;
 
     private Image[] tabs;
     private int on;
@@ -15,10 +16,14 @@ public class UISetToggle : MonoBehaviour
 
     void Awake()
     {
-        on = 4;
-        lastChild = 2;
+        if (intialOn != -1)
+        {
+            on = intialOn;
+            lastChild = on / 2;
+        }
+        
         tabs = GetComponentsInChildren<Image>();
-        if (panelParent != null)
+        if (panelParent != null && intialOn != -1)
         {
             tabs[on].color = selected;
             SwitchTextColor(on);

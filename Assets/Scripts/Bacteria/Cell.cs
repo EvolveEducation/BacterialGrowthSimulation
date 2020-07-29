@@ -1,6 +1,6 @@
 ﻿using Random = System.Random;
 using System.Collections.Generic;
-
+using UnityEngine;
 
 namespace Bacteria
 {
@@ -35,7 +35,7 @@ namespace Bacteria
         {
             Random rng = new Random();
             int randomLocation = rng.Next(0, AvailableSpace.Count);
-            int[] location = AvailableSpace[randomLocation];
+            int[] location = AvailableSpace[randomLocation-1];
             Petridish.Instance.CellLocations[location[0], location[1]] = true;
             Cell newCell = new Cell(location[0], location[1]);
             AvailableSpace.RemoveAt(randomLocation);
@@ -49,13 +49,17 @@ namespace Bacteria
          */
         private void FindAvailableSpace()
         {
-            for (int i = X - 1; i < 3; i++)
+            int max = Petridish.Instance.DishRadius * 2;
+            for (int i = X - 1; i < X + 3; i++)
             {
-                for (int j = Y - 1; j < 3; j++)
+                for (int j = Y - 1; j < Y + 3; j++)
                 {
-                    if (!Petridish.Instance.CellLocations[i, j] && Petridish.Instance.InCircle(i, j))
+                    if (i <= max && j <= max)
                     {
-                        AvailableSpace.Add(new int[] { i, j });
+                        if (!Petridish.Instance.CellLocations[i, j] && Petridish.Instance.InCircle(i, j))
+                        {
+                            AvailableSpace.Add(new int[] { i, j });
+                        }
                     }
                 }
             }

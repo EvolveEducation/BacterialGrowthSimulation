@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace Bacteria
 {
@@ -46,9 +43,9 @@ namespace Bacteria
                     cellsToGrow.Add(Task.Run(() => cell.Grow()));
                 }
             }
-
             var cells = await Task.WhenAll(cellsToGrow);
             activeCells.AddRange(cells);
+
             return new List<Cell>(cells);
         }
     }

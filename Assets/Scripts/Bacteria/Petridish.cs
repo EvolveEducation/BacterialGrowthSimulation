@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -28,6 +28,7 @@ namespace Bacteria
         private int simulationLength;
         private int growthRate;
         private List<Colony> colonyList;
+        private float dishNormailzer;
         private CancellationTokenSource cts;
 
         //MonoBehaviour//
@@ -44,6 +45,7 @@ namespace Bacteria
             }
             DishRadius = 300;
             CellLocations = new bool[DishRadius * 2, DishRadius * 2];
+            dishNormailzer = (DishRadius * 2) / 10;
             simulationLength = 100;
             growthRate = 2;
             colonyList = new List<Colony>();
@@ -66,7 +68,7 @@ namespace Bacteria
         {
             int R = DishRadius;
             int dx = Math.Abs(x - R); //radius is essentially the center
-            int dy = Math.Abs(y - R); //radius is essentially the center
+            int dy = Math.Abs(y - R);
 
             if (dx + dy <= R) return true;
             if (dx > R) return false;
@@ -85,10 +87,22 @@ namespace Bacteria
         */
         private async void SimulationStart()
         {
+            foreach (Transform child in petriDish.transform)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
+
             startingCells = (int) numOfCells.value;
             logs.text = "";
             logs.text += "Simulation starting...\n";
-            //logs.text += mutagens.name + " is being used. Typical growth rate is " + mutagen.growthrate
+            if (mutagens.AnyTogglesOn())
+            {
+                foreach (Toggle t in mutagens.ActiveToggles())
+                    logs.text += t.name + " environment. Typical growth rate is \n";// + mutagen.growthrate;
+            } else
+            {
+                logs.text += "Neutral environment. Typical growth rate is \n";
+            }
 
             SpreadCells();
             Progress<List<Cell>> progress = new Progress<List<Cell>>();
@@ -102,13 +116,13 @@ namespace Bacteria
                 }
                 catch (OperationCanceledException)
                 {
-                    logs.text += "...Simulation Cancelled.";
+                    logs.text += "...Simulation Cancelled.\n";
                 }
                 await Task.Delay(growthRate);
             }
             
 
-            logs.text += "...Simulation Complete.";
+            logs.text += "...Simulation Complete.\n";
 
             //log data into json here.
         }
@@ -123,7 +137,7 @@ namespace Bacteria
 
 
         /*
-         * Grows each colony async in parallel. The report function will allow the cells to grow
+         * Grows each colony asyncroniously concurrently. The report function will allow the cells to grow
          * on the plate dynamically and the cancelationtoken allows the user to stop the growth entirely.
          * @param progress used to monitor the progress of the async task (like a callback)
          * @param cancellationToken used to cancel the growth if desired (like a callback)
@@ -131,16 +145,13 @@ namespace Bacteria
          */
         private async Task Grow(IProgress<List<Cell>> progress, CancellationToken cancellationToken)
         {
-            await Task.Run(() =>
+            var tasks = colonyList.Select(async colony =>
             {
-                Parallel.ForEach<Colony>(colonyList, async (colony) =>
-                {
-                    List<Cell> newCells = await colony.GrowParallelAsync();
-                    cancellationToken.ThrowIfCancellationRequested();
-                    progress.Report(newCells);
-                    Debug.Log("Run");
-                });
+                List<Cell> newCells = await colony.GrowParallelAsync();
+                cancellationToken.ThrowIfCancellationRequested();
+                progress.Report(newCells);
             });
+            await Task.WhenAll(tasks);
         }
 
         /*
@@ -158,7 +169,7 @@ namespace Bacteria
                     CellLocations[x, y] = true;
                     Colony newColony = new Colony(new Cell(x, y));
 
-                    cellPrefab.transform.position = new Vector3(x/100, 0, y/100);
+                    cellPrefab.transform.position = new Vector3(x / dishNormailzer, 0, y / dishNormailzer);
                     Instantiate(cellPrefab, petriDish.transform);
                     
                     colonyList.Add(newColony);
@@ -182,7 +193,7 @@ namespace Bacteria
             
             foreach (Cell cell in cells)
             {
-                cellPrefab.transform.position = new Vector3(cell.X / 100, 0, cell.Y / 100);
+                cellPrefab.transform.position = new Vector3(cell.X / dishNormailzer, 0, cell.Y / dishNormailzer);
                 Instantiate(cellPrefab, petriDish.transform);
             }
 
