@@ -15,18 +15,21 @@ namespace Bacteria
         public GameObject cellPrefab;
         public GameObject petriDish;
         public Button start;
-        public ToggleGroup mutagens;
+        public ToggleGroup uvLight;
         public Slider numOfCells;
         public Text logs;
+        public Toggle bleach;
+        public Toggle colorBlindness;
+        public Slider temperature;
+        public Slider trialTime;
         // public GraphAnimation graph //not sure how to call charts and graphs stuff
-        
+
         public static Petridish Instance { get; private set; }
         public int DishRadius { get; private set; }
         public bool[,] CellLocations { get; private set; }
 
         private int startingCells;
         private int simulationLength;
-        private int growthRate;
         private List<Colony> colonyList;
         private float dishNormailzer;
         private CancellationTokenSource cts;
@@ -46,10 +49,7 @@ namespace Bacteria
             DishRadius = 300;
             CellLocations = new bool[DishRadius * 2, DishRadius * 2];
             dishNormailzer = (DishRadius * 2) / 10;
-            simulationLength = 100;
-            growthRate = 2;
-            colonyList = new List<Colony>();
-            cts = new CancellationTokenSource();
+            
         }
 
         void Start()
@@ -87,6 +87,39 @@ namespace Bacteria
         */
         private async void SimulationStart()
         {
+            colonyList = new List<Colony>();
+            cts = new CancellationTokenSource();
+            simulationLength = (int)(50 * (trialTime.value / 12));
+
+            if (uvLight.AnyTogglesOn())
+            {
+                foreach (Toggle t in uvLight.ActiveToggles())
+                    switch (t.name)
+                    {
+                        case "High UV Light":
+                            simulationLength /= 2;
+                            break;
+                        case "Mid UV Light":
+                            simulationLength /= 4;
+                            break;
+                        case "Low UV Light":
+                            simulationLength /= 8;
+                            break;
+                    }
+            }
+            Debug.Log(simulationLength);
+
+            int ij = (int) Math.Abs(temperature.value - 70);
+
+            Debug.Log(ij);
+
+            if (bleach.isOn)
+            {
+                simulationLength /= 2;
+            }
+
+            Debug.Log(simulationLength);
+
             foreach (Transform child in petriDish.transform)
             {
                 GameObject.Destroy(child.gameObject);
@@ -95,14 +128,7 @@ namespace Bacteria
             startingCells = (int) numOfCells.value;
             logs.text = "";
             logs.text += "Simulation starting...\n";
-            if (mutagens.AnyTogglesOn())
-            {
-                foreach (Toggle t in mutagens.ActiveToggles())
-                    logs.text += t.name + " environment. Typical growth rate is \n";// + mutagen.growthrate;
-            } else
-            {
-                logs.text += "Neutral environment. Typical growth rate is \n";
-            }
+
 
             SpreadCells();
             Progress<List<Cell>> progress = new Progress<List<Cell>>();
@@ -118,7 +144,6 @@ namespace Bacteria
                 {
                     logs.text += "...Simulation Cancelled.\n";
                 }
-                await Task.Delay(growthRate);
             }
             
 

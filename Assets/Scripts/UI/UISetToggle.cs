@@ -46,7 +46,7 @@ public class UISetToggle : MonoBehaviour
 
     public void SetActivePanel(int i)
     {
-        SwitchToggle(i);
+        SwitchTextColor(i);
 
         switch (on)
         {
