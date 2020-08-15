@@ -35,7 +35,7 @@ namespace Bacteria
         {
             Random rng = new Random();
             int randomLocation = rng.Next(0, AvailableSpace.Count);
-            int[] location = AvailableSpace[randomLocation-1];
+            int[] location = AvailableSpace[randomLocation];
             Petridish.Instance.CellLocations[location[0], location[1]] = true;
             Cell newCell = new Cell(location[0], location[1]);
             AvailableSpace.RemoveAt(randomLocation);

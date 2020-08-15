@@ -32,9 +32,10 @@ namespace Bacteria
         {
             List<Task<Cell>> cellsToGrow = new List<Task<Cell>>();
             
-            foreach (Cell cell in activeCells)
+            //for loop
+            foreach (Cell cell in activeCells.ToArray())
             {
-                if (cell.AvailableSpace.Count < 0)
+                if (cell.AvailableSpace.Count < 1)
                 {
                     activeCells.Remove(cell);
                 }
