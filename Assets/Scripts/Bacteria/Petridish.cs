@@ -22,17 +22,16 @@ namespace Bacteria
         public Toggle colorBlindness;
         public Slider temperature;
         public Slider trialTime;
-        // public GraphAnimation graph //not sure how to call charts and graphs stuff
+        public GameObject graph;
 
         public static Petridish Instance { get; private set; }
         public int DishRadius { get; private set; }
+        public int DishDiameter { get; private set; }
         public bool[,] CellLocations { get; private set; }
+        public Random RNG { get; private set; }
 
-        private int startingCells;
-        private int simulationLength;
         private List<Colony> colonyList;
         private float dishNormailzer;
-        private CancellationTokenSource cts;
 
         //MonoBehaviour//
         void Awake()
@@ -47,8 +46,10 @@ namespace Bacteria
                 Destroy(gameObject);
             }
             DishRadius = 300;
-            CellLocations = new bool[DishRadius * 2, DishRadius * 2];
-            dishNormailzer = (DishRadius * 2) / 10;
+            DishDiameter = DishRadius * 2;
+            RNG = new Random();
+            CellLocations = new bool[DishDiameter, DishDiameter];
+            dishNormailzer = (DishDiameter) / 10;
             
         }
 
@@ -88,8 +89,10 @@ namespace Bacteria
         private async void SimulationStart()
         {
             colonyList = new List<Colony>();
-            cts = new CancellationTokenSource();
-            simulationLength = (int)(50 * (trialTime.value / 12));
+            float adjustedX = temperature.value - 1.5f;
+            double temperatureEstimate = (2.783e-16 * Math.Pow(adjustedX, 11)) - (4.0496e-9 * Math.Pow(adjustedX, 7)) + (0.00000517429 * Math.Pow(adjustedX, 5)) + (0.00150295 * Math.Pow(adjustedX, 3));
+            double timePerDivision = 70 / (temperatureEstimate / 100);
+            int simulationLength = (int) Math.Ceiling((trialTime.value * 60) / timePerDivision);
 
             if (uvLight.AnyTogglesOn())
             {
@@ -97,69 +100,52 @@ namespace Bacteria
                     switch (t.name)
                     {
                         case "High UV Light":
-                            simulationLength /= 2;
+                            simulationLength /= 8;
                             break;
                         case "Mid UV Light":
                             simulationLength /= 4;
                             break;
                         case "Low UV Light":
-                            simulationLength /= 8;
+                            simulationLength /= 2;
                             break;
                     }
             }
-            Debug.Log(simulationLength);
-
-            int ij = (int) Math.Abs(temperature.value - 70);
-
-            Debug.Log(ij);
 
             if (bleach.isOn)
             {
-                simulationLength /= 2;
-            }
-
-            Debug.Log(simulationLength);
+                if (20 < temperature.value && temperature.value < 30)
+                {
+                    simulationLength /= 6;
+                } else
+                {
+                    simulationLength = 0;
+                }
+                    
+            } 
 
             foreach (Transform child in petriDish.transform)
             {
                 GameObject.Destroy(child.gameObject);
             }
 
-            startingCells = (int) numOfCells.value;
             logs.text = "";
             logs.text += "Simulation starting...\n";
 
 
-            SpreadCells();
+            SpreadCells((int) numOfCells.value);
             Progress<List<Cell>> progress = new Progress<List<Cell>>();
             progress.ProgressChanged += ReportProgress;
 
             for (int i = 0; i < simulationLength; i++)
             {
-                try
-                {
-                    await Grow(progress, cts.Token);
-                }
-                catch (OperationCanceledException)
-                {
-                    logs.text += "...Simulation Cancelled.\n";
-                }
+                await Grow(progress);
             }
-            
 
+            await Task.Delay(1);
             logs.text += "...Simulation Complete.\n";
 
             //log data into json here.
         }
-
-        /*
-         * Triggers a cancelaiton token to stop the simulation.
-         */
-        private void CancelSimulation()
-        {
-            cts.Cancel();
-        }
-
 
         /*
          * Grows each colony asyncroniously concurrently. The report function will allow the cells to grow
@@ -168,12 +154,11 @@ namespace Bacteria
          * @param cancellationToken used to cancel the growth if desired (like a callback)
          * @return Task required for non-event type async functions (means nothing)
          */
-        private async Task Grow(IProgress<List<Cell>> progress, CancellationToken cancellationToken)
+        private async Task Grow(IProgress<List<Cell>> progress)
         {
             var tasks = colonyList.Select(async colony =>
             {
                 List<Cell> newCells = await colony.GrowParallelAsync();
-                cancellationToken.ThrowIfCancellationRequested();
                 progress.Report(newCells);
             });
             await Task.WhenAll(tasks);
@@ -182,13 +167,12 @@ namespace Bacteria
         /*
          * Sets the intial locations of the bacteria randomly.
          */
-        private void SpreadCells()
+        private void SpreadCells(int startingCells)
         {
-            Random rng = new Random();
             for (int i = 0; i < startingCells; i++)
             {
-                int x = rng.Next(0, DishRadius * 2);
-                int y = rng.Next(0, DishRadius * 2);
+                int x = RNG.Next(0, DishDiameter);
+                int y = RNG.Next(0, DishDiameter);
                 if (CellLocations[x, y] == false && InCircle(x, y))
                 {
                     CellLocations[x, y] = true;
