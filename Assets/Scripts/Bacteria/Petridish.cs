@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChartAndGraph;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -22,7 +23,7 @@ namespace Bacteria
         public Toggle colorBlindness;
         public Slider temperature;
         public Slider trialTime;
-        public GameObject graph;
+        public GraphChart graph;
 
         public static Petridish Instance { get; private set; }
         public int DishRadius { get; private set; }
@@ -32,6 +33,9 @@ namespace Bacteria
 
         private List<Colony> colonyList;
         private float dishNormailzer;
+        private double timePerDivision;
+        private int timeMultipler;
+        private int startingCells;
 
         //MonoBehaviour//
         void Awake()
@@ -50,7 +54,6 @@ namespace Bacteria
             RNG = new Random();
             CellLocations = new bool[DishDiameter, DishDiameter];
             dishNormailzer = (DishDiameter) / 10;
-            
         }
 
         void Start()
@@ -91,8 +94,8 @@ namespace Bacteria
             colonyList = new List<Colony>();
             float adjustedX = temperature.value - 1.5f;
             double temperatureEstimate = (2.783e-16 * Math.Pow(adjustedX, 11)) - (4.0496e-9 * Math.Pow(adjustedX, 7)) + (0.00000517429 * Math.Pow(adjustedX, 5)) + (0.00150295 * Math.Pow(adjustedX, 3));
-            double timePerDivision = 70 / (temperatureEstimate / 100);
-            int simulationLength = (int) Math.Ceiling((trialTime.value * 60) / timePerDivision);
+            timePerDivision = 70 / (temperatureEstimate / 100);
+            int simulationLength = (int) Math.Floor((trialTime.value * 60) / timePerDivision);
 
             if (uvLight.AnyTogglesOn())
             {
@@ -131,8 +134,9 @@ namespace Bacteria
             logs.text = "";
             logs.text += "Simulation starting...\n";
 
-
+            logs.text += "Spreading " + (int) numOfCells.value + " cell(s) on the petridish.\n";
             SpreadCells((int) numOfCells.value);
+            InitializeGraph((int) numOfCells.value);
             Progress<List<Cell>> progress = new Progress<List<Cell>>();
             progress.ProgressChanged += ReportProgress;
 
@@ -156,12 +160,15 @@ namespace Bacteria
          */
         private async Task Grow(IProgress<List<Cell>> progress)
         {
+            List<Cell> newCells = new List<Cell>();
+
             var tasks = colonyList.Select(async colony =>
             {
-                List<Cell> newCells = await colony.GrowParallelAsync();
-                progress.Report(newCells);
+                newCells.AddRange(await colony.GrowParallelAsync());
             });
+
             await Task.WhenAll(tasks);
+            progress.Report(newCells);
         }
 
         /*
@@ -206,7 +213,35 @@ namespace Bacteria
                 Instantiate(cellPrefab, petriDish.transform);
             }
 
-            //log graph data somehow
+            PopulateGraph(cells.Count, timePerDivision / 60);
+        }
+
+        /*
+         * Initializes the graph and sets the first point.
+         * @param startingCells the number of starting cells spread on the plate
+         */
+        private void InitializeGraph(int startingCells)
+        {
+            timeMultipler = 1;
+            this.startingCells = startingCells;
+            graph.DataSource.StartBatch();
+            graph.DataSource.ClearAndMakeBezierCurve("CellGrowth");
+            graph.DataSource.SetCurveInitialPoint("CellGrowth", 0, startingCells);
+            graph.DataSource.EndBatch();
+        }
+
+        /*
+         * Adds a new point to the graph
+         * @param cellCount the number of cells (y-axis) for this point
+         * @param time the time the divisions happened (x-axis)
+         */
+        private void PopulateGraph(int cellCount, double time)
+        {
+            graph.DataSource.StartBatch();
+            graph.DataSource.AddLinearCurveToCategory("CellGrowth", new DoubleVector2(time * timeMultipler, startingCells+cellCount));
+            graph.DataSource.MakeCurveCategorySmooth("CellGrowth");
+            graph.DataSource.EndBatch();
+            timeMultipler++;
         }
     }
 }

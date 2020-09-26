@@ -4,38 +4,30 @@ using UnityEngine;
 
 public class JSONBacteriaModel : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
+ [SerializeField] private JSONPetriDish _Dish = new JSONPetriDish();
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+    public void SaveIntoJson() {
+        string dish = JsonUtility.ToJson(_Dish);
+        System.IO.File.WriteAllText(Application.persistentDataPath + "/PotionData.json", dish);
     }
 }
-//}    [SerializeField] private PotionData _PotionData = new PotionData();
 
-//    public void SaveIntoJson()
-//    {
-//        string potion = JsonUtility.ToJson(_PotionData);
-//        System.IO.File.WriteAllText(Application.persistentDataPath + "/PotionData.json", potion);
-//    }
-//}
+[System.Serializable]
+public class JSONPetriDish {
+    public string dishName;
+    public int totalCells;
+    public List<JSONColony> colonies = new List<JSONColony>();
+}
 
-//[System.Serializable]
-//public class PotionData
-//{
-//    public string potion_name;
-//    public int value;
-//    public List<Effect> effect = new List<Effect>();
-//}
+[System.Serializable]
+public class JSONColony {
+    public int x;
+    public int y;
+    public List<JSONCell> colonies = new List<JSONCell>();
+}
 
-//[System.Serializable]
-//public class Effect
-//{
-//    public string name;
-//    public string desc;
-//}
+[System.Serializable]
+public class JSONCell {
+    public int x;
+    public int y;
+}
