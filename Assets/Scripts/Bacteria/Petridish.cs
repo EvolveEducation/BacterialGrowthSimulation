@@ -1,9 +1,6 @@
 ﻿using ChartAndGraph;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = System.Random;
@@ -24,6 +21,7 @@ namespace Bacteria
         public Slider temperature;
         public Slider trialTime;
         public GraphChart graph;
+        public TrialList trialList;
 
         public static Petridish Instance { get; private set; }
         public int DishRadius { get; private set; }
@@ -35,7 +33,10 @@ namespace Bacteria
         private float dishNormailzer;
         private double timePerDivision;
         private int timeMultipler;
-        private int startingCells;
+        private int cellCount;
+        private int trialNumber;
+        private int UVType; //0 = none, 1 = low, 2 = moderate, 3 = high
+        private JSONBacteriaModel jsonDataSet;
 
         //MonoBehaviour//
         void Awake()
@@ -54,6 +55,7 @@ namespace Bacteria
             RNG = new Random();
             CellLocations = new bool[DishDiameter, DishDiameter];
             dishNormailzer = (DishDiameter) / 10;
+            trialNumber = 1;
         }
 
         void Start()
@@ -89,13 +91,17 @@ namespace Bacteria
         * Monitors the growth of the colonies and based on the IProgress: generates new cells, 
         * logs data, and populates the graph. Each trial is also saved to a json file.
         */
-        private async void SimulationStart()
+        private void SimulationStart()
         {
+            UVType = 0;
             colonyList = new List<Colony>();
+            jsonDataSet = ScriptableObject.CreateInstance<JSONBacteriaModel>();
             float adjustedX = temperature.value - 1.5f;
             double temperatureEstimate = (2.783e-16 * Math.Pow(adjustedX, 11)) - (4.0496e-9 * Math.Pow(adjustedX, 7)) + (0.00000517429 * Math.Pow(adjustedX, 5)) + (0.00150295 * Math.Pow(adjustedX, 3));
             timePerDivision = 70 / (temperatureEstimate / 100);
             int simulationLength = (int) Math.Floor((trialTime.value * 60) / timePerDivision);
+            
+            string uvType = "no";
 
             if (uvLight.AnyTogglesOn())
             {
@@ -103,13 +109,16 @@ namespace Bacteria
                     switch (t.name)
                     {
                         case "High UV Light":
-                            simulationLength /= 8;
+                            uvType = "high";
+                            UVType = 3;
                             break;
                         case "Mid UV Light":
-                            simulationLength /= 4;
+                            uvType = "moderate";
+                            UVType = 2;
                             break;
                         case "Low UV Light":
-                            simulationLength /= 2;
+                            uvType = "low";
+                            UVType = 1;
                             break;
                     }
             }
@@ -123,8 +132,10 @@ namespace Bacteria
                 {
                     simulationLength = 0;
                 }
-                    
-            } 
+            }
+
+            jsonDataSet.InstantiateJSON(trialNumber, bleach.isOn, uvType,
+                temperature.value, trialTime.value, (int)numOfCells.value);
 
             foreach (Transform child in petriDish.transform)
             {
@@ -137,38 +148,81 @@ namespace Bacteria
             logs.text += "Spreading " + (int) numOfCells.value + " cell(s) on the petridish.\n";
             SpreadCells((int) numOfCells.value);
             InitializeGraph((int) numOfCells.value);
-            Progress<List<Cell>> progress = new Progress<List<Cell>>();
-            progress.ProgressChanged += ReportProgress;
 
             for (int i = 0; i < simulationLength; i++)
             {
-                await Grow(progress);
+                ReportProgress(Grow());
+                if (1)
+                {
+                    deathRate = 0.01(a - 8) ^{ 3} +0.0257(a - 8) ^ 4
+                }
             }
 
-            await Task.Delay(1);
             logs.text += "...Simulation Complete.\n";
-
-            //log data into json here.
+            jsonDataSet.SaveIntoJson();
+            trialList.NewTrial(jsonDataSet.ParseJSON(trialNumber), trialNumber);
+            trialNumber++;
         }
 
         /*
-         * Grows each colony asyncroniously concurrently. The report function will allow the cells to grow
-         * on the plate dynamically and the cancelationtoken allows the user to stop the growth entirely.
-         * @param progress used to monitor the progress of the async task (like a callback)
-         * @param cancellationToken used to cancel the growth if desired (like a callback)
-         * @return Task required for non-event type async functions (means nothing)
+         * Populates the Petridish with a generated run that's been stored in JSON.
+         * @param trialID is the trial that will be generated
          */
-        private async Task Grow(IProgress<List<Cell>> progress)
+        public void PopulateDish(int trialID)
+        {
+            foreach (Transform child in petriDish.transform)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
+
+            JSONPetriDish jsonDish = jsonDataSet.ParseJSON(trialID);
+            JSONPetriDishAtTimeN lastDish = jsonDish.dishTimes[jsonDish.dishTimes.Count - 1];
+
+            logs.text = "";
+            logs.text += "Loading " + jsonDish.dishName + "...\n";
+            logs.text += "This trial had:\n";
+            logs.text += jsonDish.startingCells + " starting cells,\n";
+            logs.text += "a temperature of " + jsonDish.temp.ToString("0.0") + "°C,\n";
+            logs.text += "grown under " + jsonDish.UV + " UV light,\n";
+            logs.text += jsonDish.bleach ? "with bleach,\n" : "with no bleach,\n";
+            int remainder = (int)Math.Floor(Math.Abs(Math.Floor(jsonDish.time) - jsonDish.time) * 60);
+            string rString = (remainder < 10) ? "0" + remainder : remainder.ToString();
+            logs.text += "for " + Math.Floor(jsonDish.time).ToString() + " hour(s) and " + rString + " minute(s).\n\n";
+
+
+            foreach (JSONColony colony in lastDish.colonies)
+            {
+                foreach (JSONCell cell in colony.cells)
+                {
+                    cellPrefab.transform.position = new Vector3(cell.x / dishNormailzer, 0, cell.y / dishNormailzer);
+                    Instantiate(cellPrefab, petriDish.transform);
+                }
+            }
+
+            InitializeGraph(jsonDish.dishTimes[0].totalCells);
+
+            for (int i = 1; i < jsonDish.dishTimes.Count; i++)
+            {
+                PopulateGraph(jsonDish.dishTimes[i].totalCells, (timePerDivision / 60));
+            }
+
+            logs.text += "Total number of cells grown: " + jsonDish.finalCellCount;
+        }
+
+        /*
+         * Grows each colony.
+         * @return a list of the newly grown cells
+         */
+        private List<Cell> Grow()
         {
             List<Cell> newCells = new List<Cell>();
 
-            var tasks = colonyList.Select(async colony =>
+            foreach (Colony c in colonyList)
             {
-                newCells.AddRange(await colony.GrowParallelAsync());
-            });
+                newCells.AddRange(c.GrowColony());
+            }
 
-            await Task.WhenAll(tasks);
-            progress.Report(newCells);
+            return newCells;
         }
 
         /*
@@ -195,15 +249,16 @@ namespace Bacteria
                     i--;
                 }
             }
+            cellCount = startingCells;
+            jsonDataSet.UpdateJSON(this.cellCount, 0, colonyList);
         }
 
         /*
-         * Called whenever the progress has been changed; whenever a colony grows.
-         * Updates the graph, log, and petridish itself dynamically on screen. 
-         * @param sender the method that called it (unused but needed)
+         * Called whenever a colony grows.
+         * Updates the graph, log, and petridish.
          * @param cells is a list a of new cells on the petridish 
          */
-        private void ReportProgress(object sender, List<Cell> cells)
+        private void ReportProgress(List<Cell> cells)
         {
             logs.text += cells.Count + " new cells.\n";
             
@@ -212,8 +267,9 @@ namespace Bacteria
                 cellPrefab.transform.position = new Vector3(cell.X / dishNormailzer, 0, cell.Y / dishNormailzer);
                 Instantiate(cellPrefab, petriDish.transform);
             }
-
-            PopulateGraph(cells.Count, timePerDivision / 60);
+            cellCount += cells.Count;
+            LogData(cellCount, (timePerDivision / 60) * timeMultipler);
+            PopulateGraph(cellCount, timePerDivision / 60);
         }
 
         /*
@@ -223,7 +279,6 @@ namespace Bacteria
         private void InitializeGraph(int startingCells)
         {
             timeMultipler = 1;
-            this.startingCells = startingCells;
             graph.DataSource.StartBatch();
             graph.DataSource.ClearAndMakeBezierCurve("CellGrowth");
             graph.DataSource.SetCurveInitialPoint("CellGrowth", 0, startingCells);
@@ -238,10 +293,20 @@ namespace Bacteria
         private void PopulateGraph(int cellCount, double time)
         {
             graph.DataSource.StartBatch();
-            graph.DataSource.AddLinearCurveToCategory("CellGrowth", new DoubleVector2(time * timeMultipler, startingCells+cellCount));
+            graph.DataSource.AddLinearCurveToCategory("CellGrowth", new DoubleVector2(time * timeMultipler, cellCount));
             graph.DataSource.MakeCurveCategorySmooth("CellGrowth");
             graph.DataSource.EndBatch();
             timeMultipler++;
+        }
+
+        /*
+         * Adds a new timestamp of the petridish
+         * @param cellCount the number of cells for this point
+         * @param time the time the divisions happened
+         */
+        private void LogData(int cellCount, double time)
+        {
+            jsonDataSet.UpdateJSON(cellCount, time, colonyList);
         }
     }
 }

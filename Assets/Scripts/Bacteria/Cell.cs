@@ -1,5 +1,4 @@
-﻿using Random = System.Random;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Bacteria
 {

@@ -1,45 +1,62 @@
-﻿using System.IO;
-using System.Collections;
+﻿using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TrialList : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public GameObject trialPrefab;
+
+    public void NewTrial(JSONPetriDish trialData, int trialID)
     {
-        string json = File.ReadAllText("Assets/Scripts/UI/dataAA.json");
-        TrialData td = JsonUtility.FromJson<TrialData>(json);
-        StartCoroutine(UpdateTrials(td));
+        RawImage rawImage = trialPrefab.GetComponentInChildren<RawImage>();
+        rawImage.texture = GenerateTexture(trialData.dishTimes[trialData.dishTimes.Count - 1]);
+        trialPrefab.name = "" + trialID;
+        trialPrefab.GetComponentInChildren<Text>().text = trialData.dishName + " : " + trialData.finalCellCount;
+        Instantiate(trialPrefab, this.transform);
     }
 
-    IEnumerator UpdateTrials(TrialData td)
-    {
-        UIRepeat uiRepeat = GetComponent<UIRepeat>();
-        uiRepeat.SetNumRepetitions(td.trials.Count);
-
-        while (transform.childCount != td.trials.Count)
-        {
-            yield return new WaitForFixedUpdate();
-        }
-
-
-        for (int i = 0; i < td.trials.Count; i++)
-        {
-            Transform child = transform.GetChild(i);
-            Trial trial = td.trials[i];
-            RawImage rawImage = child.GetComponentInChildren<RawImage>();
-            rawImage.texture = generateTexture(trial);
-        }
-    }
-
-    Texture2D generateTexture(Trial trial)
+    private Texture2D GenerateTexture(JSONPetriDishAtTimeN trial)
     {
         Texture2D texture = new Texture2D(300, 300);
-        foreach (Colony colony in trial.colonies)
+        texture.LoadImage(File.ReadAllBytes(Application.dataPath + "/Materials & Models/baseTrial.png"));
+
+        foreach (JSONColony colony in trial.colonies)
         {
-            texture.DrawCircle(Color.red, colony.x, colony.y, colony.radius);
+            texture.DrawCircle(new Color(1, 0.8941177f, 0.7411765f), colony.x, colony.y, colony.radius);
         }
+
+
+        double i, angle, x1, y1;
+        double r = 149;
+        for (double thick = 145; thick <= r; thick++)
+        {
+            for (i = 0; i < 360; i += 0.1)
+            {
+                angle = i;
+                x1 = thick * Math.Cos(angle * Math.PI / 180);
+                y1 = thick * Math.Sin(angle * Math.PI / 180);
+                texture.SetPixel((int)(150 + x1), (int)(150 + y1), Color.black);
+            }
+        }
+
+        for (int x = 0; x < 300; x++)
+        {
+            for (int y = 0; y < 300; y++)
+            {
+                int R = 149;
+                int dx = Math.Abs(x - R);
+                int dy = Math.Abs(y - R);
+                if (dx > R || dy > R)
+                {
+                }
+                if (!(Math.Pow(dx, 2) + Math.Pow(dy, 2) <= Math.Pow(R, 2)))
+                {
+                    texture.SetPixel(x, y, Color.clear);
+                }
+            }
+        }
+        texture.Apply();
 
         return texture;
     }
@@ -48,28 +65,25 @@ public class TrialList : MonoBehaviour
 
 public static class Tex2DExtension
 {
-    public static Texture2D DrawCircle(this Texture2D tex, Color col, int cx, int cy, int r)
+    public static Texture2D DrawCircle(this Texture2D tex, Color col, int cx, int cy, double r)
     {
-        int x, y, px, nx, py, ny, d;
+        r /= 2;
+        cx /= 2;
+        cy /= 2;
+        double i, angle, x1, y1;
 
-        for (x = 0; x <= r; x++)
+        for (int fill = 1; fill <= r; fill++)
         {
-            d = (int)Mathf.Ceil(Mathf.Sqrt(r * r - x * x));
-            for (y = 0; y <= d; y++)
+            for (i = 0; i < 360; i += 0.1)
             {
-                px = cx + x;
-                nx = cx - x;
-                py = cy + y;
-                ny = cy - y;
-
-                tex.SetPixel(px, py, col);
-                tex.SetPixel(nx, py, col);
-
-                tex.SetPixel(px, ny, col);
-                tex.SetPixel(nx, ny, col);
-
+                angle = i;
+                x1 = fill * Math.Cos(angle * Math.PI / 180);
+                y1 = fill * Math.Sin(angle * Math.PI / 180);
+                tex.SetPixel((int)(cx + x1), (int)(cy + y1), col);
             }
-        }
+        }       
+
+        tex.Apply();
         return tex;
     }
 }
