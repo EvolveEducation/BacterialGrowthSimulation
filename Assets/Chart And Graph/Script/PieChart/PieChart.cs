@@ -89,16 +89,13 @@ namespace ChartAndGraph
         [SerializeField]
         [Tooltip("draw the pie in a clockwise order ")]
         private bool clockWise = false;
-
-
-        GameObject mFixPositionPie = null;
         public bool ClockWise
         {
             get { return clockWise; }
             set
             {
                 clockWise = value;
-                Invalidate();
+                GenerateChart();
             }
         }
 
@@ -229,7 +226,7 @@ namespace ChartAndGraph
             set
             {
                 startAngle = value;
-                OnPropertyChanged();
+                OnPropertyUpdated();
             }
         }
 
@@ -299,7 +296,6 @@ namespace ChartAndGraph
         /// <summary>
         /// the bars generated for the chart
         /// </summary>
-        [NonSerialized]
         Dictionary<string, PieObject> mPies = new Dictionary<string, PieObject>();
 
         void HookEvents()
@@ -314,7 +310,7 @@ namespace ChartAndGraph
 
         private void Data_ProperyUpdated()
         {
-            Invalidate();
+            GenerateChart();
         }
 
         protected void QuickInvalidate()
@@ -325,7 +321,7 @@ namespace ChartAndGraph
             mQuick = true;
         }
 
-        public override void Invalidate()
+        protected override void Invalidate()
         {
             base.Invalidate();
             mQuick = false;
@@ -333,14 +329,12 @@ namespace ChartAndGraph
 
         private void MDataSource_DataValueChanged(object sender, DataSource.ChartDataSourceBase.DataValueChangedEventArgs e)
         {
-            QuickInvalidate();
-//            GeneratePie(true);
+            GeneratePie(true);
         }
 
         private void MDataSource_DataStructureChanged(object sender, EventArgs e)
         {
-            Invalidate();
-//            GenerateChart();
+            GenerateChart();
         }
 
         protected override void Start()
@@ -367,7 +361,6 @@ namespace ChartAndGraph
         {
             base.ClearChart();
             mPies.Clear();
-            mFixPositionPie = null;
         }
 
         Vector3 AlignTextPosition(AlignedItemLabels labels,PieObject obj,out CanvasLines.LineSegement line,float modifiedRaidus)
@@ -413,12 +406,11 @@ namespace ChartAndGraph
 
         private void GeneratePie(bool update)
         {
-            if (mFixPositionPie == null)
-                update = false;
             if (update == false)
                 ClearChart();
             else
                 EnsureTextController();
+
             if (((IInternalPieData)Data).InternalDataSource == null)
                 return;
 
@@ -446,21 +438,6 @@ namespace ChartAndGraph
             if (spanWithoutGaps < 0f)
                 spanWithoutGaps = 0f;
 
-            if (mFixPositionPie == null)
-            {
-                mFixPositionPie = new GameObject("FixPositionPie", typeof(ChartItem));
-                ChartCommon.HideObject(mFixPositionPie, hideHierarchy);
-                mFixPositionPie.transform.SetParent(transform, false);
-                if (IsCanvas)
-                {
-                    var rectTrans = mFixPositionPie.AddComponent<RectTransform>();
-                    rectTrans.anchorMax = new Vector2(0.5f, 0.5f);
-                    rectTrans.anchorMin = new Vector2(0.5f, 0.5f);
-                    rectTrans.pivot = new Vector2(0.5f, 0.5f);
-                    rectTrans.anchoredPosition = new Vector2(0.5f, 0.5f);
-                }
-            }
-            
             for (int i = 0; i < columnCount; ++i)
             {
                 object userData = ((IInternalPieData)Data).InternalDataSource.Columns[i].UserData;
@@ -526,17 +503,14 @@ namespace ChartAndGraph
                 else
                 {
                     GameObject topObject = new GameObject();
-                    if (IsCanvas)
-                        topObject.AddComponent<RectTransform>();
                     ChartCommon.HideObject(topObject, hideHierarchy);
                     topObject.AddComponent<ChartItem>();
-                    topObject.transform.SetParent(mFixPositionPie.transform);
+                    topObject.transform.SetParent(transform);
                     topObject.transform.localPosition = new Vector3();
                     topObject.transform.localRotation = Quaternion.identity;
                     topObject.transform.localScale = new Vector3(1f, 1f, 1f);
 
                     generator = PreparePieObject(out pieObject);
-
                     ChartCommon.EnsureComponent<ChartItem>(pieObject);
                     ChartMaterialController control = ChartCommon.EnsureComponent<ChartMaterialController>(pieObject);
                     control.Materials = Data.GetMaterial(name);
@@ -547,14 +521,12 @@ namespace ChartAndGraph
                     dataObject.TopObject = topObject;
                     dataObject.Generator = generator;
                     dataObject.category = name;
-                    var pieInfo = pieObject.AddComponent<PieInfo>();
-                    pieInfo.pieObject = dataObject;
                     pieObject.transform.SetParent(topObject.transform);
                     Vector2 add = ChartCommon.FromPolar(start + currentSpan * 0.5f, Extrusion);
                     pieObject.transform.localPosition = new Vector3(0f, 0f, 0f);
                     pieObject.transform.localScale = new Vector3(1f, 1f, 1f);
                     pieObject.transform.localRotation = Quaternion.identity;
-                    mPies.Add(name,dataObject);
+                    mPies.Add(name, dataObject);
 
                     topObject.transform.localPosition = new Vector3(add.x, add.y, 0f);
                     CharItemEffectController effect = ChartCommon.EnsureComponent<CharItemEffectController>(pieObject);
@@ -578,7 +550,7 @@ namespace ChartAndGraph
                             dataObject.ItemLine = AddLineRenderer(topObject, line);
                         string toSet = ChartAdancedSettings.Instance.FormatFractionDigits(mItemLabels.FractionDigits, amount);
                         toSet = mItemLabels.TextFormat.Format(toSet, name, "");
-                        BillboardText billboard = ChartCommon.CreateBillboardText(null,mItemLabels.TextPrefab, topObject.transform, toSet, labelPos.x, labelPos.y, labelPos.z,lineAngle, topObject.transform, hideHierarchy, mItemLabels.FontSize, mItemLabels.FontSharpness);
+                        BillboardText billboard = ChartCommon.CreateBillboardText(null,mItemLabels.TextPrefab, topObject.transform, toSet, labelPos.x, labelPos.y, labelPos.z,lineAngle, transform, hideHierarchy, mItemLabels.FontSize, mItemLabels.FontSharpness);
                         dataObject.ItemLabel = billboard;
                         TextController.AddText(billboard);
                     }
@@ -590,7 +562,7 @@ namespace ChartAndGraph
                             dataObject.CategoryLine = AddLineRenderer(topObject, line);
                         string toSet = name;
                         toSet = mCategoryLabels.TextFormat.Format(toSet, "", "");
-                        BillboardText billboard = ChartCommon.CreateBillboardText(null,mCategoryLabels.TextPrefab, topObject.transform, toSet, labelPos.x, labelPos.y, labelPos.z, lineAngle, topObject.transform, hideHierarchy, mCategoryLabels.FontSize, mCategoryLabels.FontSharpness);
+                        BillboardText billboard = ChartCommon.CreateBillboardText(null,mCategoryLabels.TextPrefab, topObject.transform, toSet, labelPos.x, labelPos.y, labelPos.z, lineAngle,transform, hideHierarchy, mCategoryLabels.FontSize, mCategoryLabels.FontSharpness);
                         dataObject.CategoryLabel = billboard;
                         TextController.AddText(billboard);
                     }
@@ -649,7 +621,7 @@ namespace ChartAndGraph
 
         protected virtual void OnPropertyChanged()
         {
-            QuickInvalidate();
+            GeneratePie(true);
         }
 
         protected override void OnPropertyUpdated()

@@ -134,11 +134,7 @@ namespace ChartAndGraph
             t.SetParent(rectMask.transform, false);
             t.localScale = new Vector3(1f, 1f, 1f);
             t.anchorMin = new Vector2(0f, 0f);
-            t.anchorMax = new Vector2(1f, 1f);
-            t.sizeDelta = new Vector2(0f, 0f);
-            t.anchorMin = new Vector2(0f, 0f);
             t.anchorMax = new Vector2(0f, 0f);
-
             t.anchoredPosition = Vector3.zero;
             t.localRotation = Quaternion.identity;
             return lines;
@@ -172,10 +168,7 @@ namespace ChartAndGraph
             double factor = size / mag;
             return factor * radius;
         }
-        protected override void ViewPortionChanged()
-        {
-            InvalidateRealtime();
-        }
+
         public override void GenerateRealtime()
         {
             if (SupressRealtimeGeneration)
@@ -275,7 +268,6 @@ namespace ChartAndGraph
                             toSet = mRealtimeStringBuilder.ToString();
                             obj.mCahced[pointIndex] = toSet;
                         }
-                        labelPos -= new Vector3(CanvasFitOffset.x * TotalWidth, CanvasFitOffset.y * TotalHeight,0f);
                         BillboardText billboard = m.AddText(this, mItemLabels.TextPrefab, parentT, mItemLabels.FontSize, mItemLabels.FontSharpness, toSet, labelPos.x, labelPos.y, labelPos.z, 0f, null);
                         AddBillboardText(data.Name, i + refrenceIndex, billboard);
                     }
@@ -330,7 +322,7 @@ namespace ChartAndGraph
             }
             ClearRealtimeIndexdata();
         }
-        protected override bool ShouldFitCanvas { get { return true; } }
+
         protected override FitType FitAspectCanvas
         {
             get
@@ -498,7 +490,6 @@ namespace ChartAndGraph
                         Vector3 labelPos = ((Vector3)mTransformed[i]) + new Vector3(mItemLabels.Location.Breadth, mItemLabels.Seperation, mItemLabels.Location.Depth);
                         if (mItemLabels.Alignment == ChartLabelAlignment.Base)
                             labelPos.y -= mTransformed[i].y;
-                        labelPos -= new Vector3(CanvasFitOffset.x * TotalWidth, CanvasFitOffset.y * TotalHeight,0f);
                         FormatItem(mRealtimeStringBuilder, xFormat, yFormat);
                         string formatted = mRealtimeStringBuilder.ToString();
                         string toSet = mItemLabels.TextFormat.Format(formatted, data.Name, "");

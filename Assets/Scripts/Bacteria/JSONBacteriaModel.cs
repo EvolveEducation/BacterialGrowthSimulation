@@ -15,6 +15,11 @@ public class JSONBacteriaModel : ScriptableObject
      */
     public void InstantiateJSON(int trialNumber, bool b, int uvType, float temp, float time, int cells)
     {
+        if (!Directory.Exists(Application.persistentDataPath + "/Logs"))
+        {
+            Directory.CreateDirectory(Application.persistentDataPath + "/Logs");
+        }
+
         petriDish = new JSONPetriDish
         {
             trialID = trialNumber,
@@ -70,7 +75,7 @@ public class JSONBacteriaModel : ScriptableObject
     {
         petriDish.finalCellCount = petriDish.dishTimes[petriDish.dishTimes.Count - 1].totalCells;
         string dishJSON = JsonUtility.ToJson(petriDish);
-        File.WriteAllText(Application.dataPath + "/Logs/" + petriDish.dishName + ".json", dishJSON);
+        File.WriteAllText(Application.persistentDataPath + "/Logs/" + petriDish.dishName + ".json", dishJSON);
     }
 
     /*
@@ -79,12 +84,12 @@ public class JSONBacteriaModel : ScriptableObject
      */
     public JSONPetriDish ParseJSON(int trialNumber)
     {
-        if (!File.Exists(Application.dataPath + "/Logs/" + "Trial " + trialNumber + ".json"))
+        if (!File.Exists(Application.persistentDataPath + "/Logs/" + "Trial " + trialNumber + ".json"))
         {
-            Debug.LogError("No file " + Application.dataPath + "/Logs/" + "Trial " + trialNumber + ".json");
+            Debug.LogError("No file " + Application.persistentDataPath + "/Logs/" + "Trial " + trialNumber + ".json");
             return null;
         }
-        return JsonUtility.FromJson<JSONPetriDish>(File.ReadAllText(Application.dataPath + "/Logs/" + "Trial " + trialNumber + ".json"));
+        return JsonUtility.FromJson<JSONPetriDish>(File.ReadAllText(Application.persistentDataPath + "/Logs/" + "Trial " + trialNumber + ".json"));
     }
 }
 

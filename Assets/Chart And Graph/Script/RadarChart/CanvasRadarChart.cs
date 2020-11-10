@@ -145,15 +145,10 @@ namespace ChartAndGraph
             return container;
         }
 
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            Invalidate();
-        }
-
         protected override void OnItemHoverted(object userData)
         {
             base.OnItemHoverted(userData);
+
         }
 
         protected override void OnItemLeave(object userData,string type)

@@ -171,10 +171,8 @@ namespace ChartAndGraph
 
         private void GraphChartBase_InternalViewPortionChanged(object sender, EventArgs e)
         {
-            ViewPortionChanged();
+            InvalidateRealtime();
         }
-
-        protected abstract void ViewPortionChanged();
 
         private void GraphChartBase_InternalRealTimeDataChanged(int index,string category)
         {
@@ -200,7 +198,7 @@ namespace ChartAndGraph
             mMinimumUpdateIndex.Clear();
             mRealtimeUpdateIndex = true;
         }
-        public override void Invalidate()
+        protected override void Invalidate()
         {
             base.Invalidate();
             mRealtimeUpdateIndex = false;   // trigger a full invalidation
@@ -296,9 +294,6 @@ namespace ChartAndGraph
             double minX, minY, maxX, maxY, xScroll, yScroll, xSize, ySize, xOut;
             GetScrollParams(out minX, out minY, out maxX, out maxY, out xScroll, out yScroll, out xSize, out ySize, out xOut);
 
-            double direction = 1.0;
-            if (minX > maxX)
-                direction = -1.0;
             bool prevOut = false;
             bool prevIn = false;
 
@@ -318,7 +313,7 @@ namespace ChartAndGraph
                 DoubleVector3 point = points[i];
                 UpdateMinMax(points[i], ref minX, ref minY, ref maxX, ref maxY);
 
-                if (point.x* direction < xScroll* direction || point.x* direction > xOut* direction) // || point.y < yScroll || point.y > yOut)
+                if (point.x < xScroll || point.x > xOut) // || point.y < yScroll || point.y > yOut)
                 {
                     prevOut = true;
                     if (pIn)
@@ -329,7 +324,7 @@ namespace ChartAndGraph
                     }
                     if(pOut)
                     {
-                        if(point.x* direction > xOut* direction && points[i-1].x* direction < xScroll* direction)
+                        if(point.x > xOut && points[i-1].x < xScroll)
                         {
                             UpdateMinMax(points[i - 1], ref minXLocal, ref minYLocal, ref maxXLocal, ref maxYLocal);
                             UpdateMinMax(point, ref minXLocal, ref minYLocal, ref maxXLocal, ref maxYLocal);
@@ -366,9 +361,9 @@ namespace ChartAndGraph
         protected void TransformPoints(IList<DoubleVector3> points, Rect viewRect, DoubleVector3 min, DoubleVector3 max)
         {
             DoubleVector3 range = max - min;
-            if (Math.Abs(range.x) <= 0.0001f || Math.Abs(range.y) < 0.0001f)
+            if (range.x <= 0.0001f || range.y < 0.0001f)
                 return;
-            double radiusMultiplier = Math.Min(viewRect.width / Math.Abs(range.x), viewRect.height / Math.Abs(range.y));
+            double radiusMultiplier = Math.Min(viewRect.width / range.x, viewRect.height / range.y);
             for (int i = 0; i < points.Count; i++)
             {
                 DoubleVector3 point = points[i];
@@ -382,9 +377,9 @@ namespace ChartAndGraph
         {
             output.Clear();
             DoubleVector3 range = max - min;
-            if (Math.Abs(range.x) <= 0.0001f || Math.Abs(range.y) < 0.0001f)
+            if (range.x <= 0.0001f || range.y < 0.0001f)
                 return;
-            double radiusMultiplier = Math.Min(viewRect.width / Math.Abs(range.x), viewRect.height / Math.Abs(range.y));
+            double radiusMultiplier = Math.Min(viewRect.width / range.x, viewRect.height / range.y);
             for(int i=0; i<points.Count; i++)
             {
                 DoubleVector4 point = points[i];

@@ -33,7 +33,7 @@ public class DishRotation : MonoBehaviour,
 
     public void OnDrag(PointerEventData eventData)
     {
-        petridish.transform.Rotate(new Vector2(-eventData.delta.y, -eventData.delta.x) * Time.deltaTime * 5f, Space.World);
+        petridish.transform.Rotate(new Vector2(-eventData.delta.y, -eventData.delta.x) * Time.deltaTime * 20f, Space.World);
     }
 
     public void OnEndDrag(PointerEventData eventData)

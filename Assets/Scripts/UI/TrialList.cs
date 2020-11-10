@@ -19,16 +19,25 @@ public class TrialList : MonoBehaviour
     private Texture2D GenerateTexture(JSONPetriDishAtTimeN trial)
     {
         Texture2D texture = new Texture2D(300, 300);
-        texture.LoadImage(File.ReadAllBytes(Application.dataPath + "/Materials & Models/baseTrial.png"));
+        double i, angle, x1, y1;
+        double r = 144;
+        for (double thick = 0; thick <= r; thick++)
+        {
+            for (i = 0; i < 360; i += 0.1)
+            {
+                angle = i;
+                x1 = thick * Math.Cos(angle * Math.PI / 180);
+                y1 = thick * Math.Sin(angle * Math.PI / 180);
+                texture.SetPixel((int)(150 + x1), (int)(150 + y1), new Color(0, 0, 0, 0.5607843f));
+            }
+        }
 
         foreach (JSONColony colony in trial.colonies)
         {
             texture.DrawCircle(new Color(1, 0.8941177f, 0.7411765f), colony.x/2, colony.y/2, colony.radius/2);
         }
 
-
-        double i, angle, x1, y1;
-        double r = 149;
+        r = 149;
         for (double thick = 145; thick <= r; thick++)
         {
             for (i = 0; i < 360; i += 0.1)

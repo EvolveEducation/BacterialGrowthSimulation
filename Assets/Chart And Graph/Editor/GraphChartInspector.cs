@@ -299,9 +299,9 @@ namespace ChartAndGraph
             SerializedProperty horizontalScrolling = serializedObject.FindProperty("horizontalScrolling");
             SerializedProperty autoScrollVertically = serializedObject.FindProperty("autoScrollVertically");
             SerializedProperty verticalScrolling = serializedObject.FindProperty("verticalScrolling");
-           // SerializedProperty scrollable = serializedObject.FindProperty("scrollable");
-           // EditorGUILayout.PropertyField(scrollable);
-          //  if (scrollable.boolValue == true)
+            SerializedProperty scrollable = serializedObject.FindProperty("scrollable");
+            EditorGUILayout.PropertyField(scrollable);
+            if (scrollable.boolValue == true)
             {
                 EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(autoScrollHorizontally);
@@ -343,8 +343,8 @@ namespace ChartAndGraph
             {
                 EditorGUILayout.PropertyField(horizontalOrigin);
                 EditorGUILayout.PropertyField(horizontalSize);
-              //  if (horizontalSize.doubleValue < 0.0)
-              //      horizontalSize.doubleValue = 0.0001;
+                if (horizontalSize.doubleValue < 0.0)
+                    horizontalSize.doubleValue = 0.0001;
             }
             else
             {
@@ -363,8 +363,8 @@ namespace ChartAndGraph
             {
                 EditorGUILayout.PropertyField(verticalOrigin);
                 EditorGUILayout.PropertyField(verticalSize);
-         //       if (verticalSize.doubleValue < 0.0)
-         //           verticalSize.doubleValue = 0.0001;
+                if (verticalSize.doubleValue < 0.0)
+                    verticalSize.doubleValue = 0.0001;
             }
             else
             {

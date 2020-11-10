@@ -169,7 +169,7 @@ namespace ChartAndGraph
             float AutoAxisDepth = Depth.Value;
 //            float scrollFactor = (scrollOffset / (float)(maxValue - minValue));
             //scrollOffset = scrollFactor * parentSize;
-                
+
             if (Depth.Automatic)
             {
                 AutoAxisDepth = (float)((((IInternalUse)parent).InternalTotalDepth) - markDepth);
@@ -177,14 +177,7 @@ namespace ChartAndGraph
 
             double startValue = (scrollOffset + minValue);
             double endValue = (scrollOffset + maxValue) + double.Epsilon;
-            double direction = 1.0;
             Func<double, double> ValueToPosition = x => ((x - startValue) / range) * parentSize;
-            if (startValue > endValue)
-            {
-                direction = -1.0;
-                //ValueToPosition = x => (1.0- ((x - startValue) / range)) * parentSize;
-            }
-            gap = Math.Abs(gap);
             double fraction = gap - (scrollOffset - Math.Floor((scrollOffset / gap) - double.Epsilon) * gap);
             double mainfraction = -1f;
             double currentMain = 0f; 
@@ -201,12 +194,12 @@ namespace ChartAndGraph
             double startRange = startValue + fraction;
             foreach (double key in mFormats.Keys)
             {
-                if (key* direction > endValue* direction || key* direction < startRange* direction)
+                if (key > endValue || key < startRange)
                     mTmpToRemove.Add(key);
             }
             for(int k=0; k<mTmpToRemove.Count; k++)
                 mFormats.Remove(mTmpToRemove[k]);
-            for (double current = startRange; direction*current <= direction*endValue; current += gap*direction)
+            for (double current = startRange; current <= endValue ; current += gap)
             {
 
                 ++i;
@@ -229,8 +222,6 @@ namespace ChartAndGraph
                 }
 
                 double offset = ValueToPosition(current);
-                if (offset < 0 || offset > parentSize)
-                    continue;
                 DoubleVector3 start = startPosition + advanceDirection * offset;
                 DoubleVector3 size = halfThickness + length * lengthDirection;
                 start -= halfThickness;

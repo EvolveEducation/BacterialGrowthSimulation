@@ -226,29 +226,9 @@ namespace ChartAndGraph
             if (dataValue == false)
             {
                 if (axis == 0 && automaticHorizontalView == false)
-                {
-                    double axisAdd = horizontalViewSize;
-                    if (Math.Abs(axisAdd) < 0.0001f)
-                    {
-                        if (axisAdd < 0)
-                            axisAdd = -0.0001f;
-                        else
-                            axisAdd = 0.0001f;
-                    }
-                    return HorizontalViewOrigin + axisAdd;
-                }
+                    return HorizontalViewOrigin + Math.Max(0.001f, horizontalViewSize);
                 if (axis == 1 && AutomaticVerticallView == false)
-                {
-                    double axisAdd = verticalViewSize;
-                    if (Math.Abs(axisAdd) < 0.0001f)
-                    {
-                        if (axisAdd < 0)
-                            axisAdd = -0.0001f;
-                        else
-                            axisAdd = 0.0001f;
-                    }
-                    return VerticalViewOrigin + axisAdd;
-                }
+                    return VerticalViewOrigin + Math.Max(0.001f, verticalViewSize);
             }
             double? res = null;
             double add = 0;

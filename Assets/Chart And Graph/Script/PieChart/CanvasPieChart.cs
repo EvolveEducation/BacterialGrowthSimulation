@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace ChartAndGraph
 {
@@ -31,10 +30,6 @@ namespace ChartAndGraph
         [Tooltip("The line material for each category label line")]
         private Material lineMaterial;
 
-        public RectTransform Container;
-        public Text Title;
-        public Text Info;
-        public Image Image;
         public CanvasPieChart()
         {
             radius = 40f;
@@ -151,7 +146,6 @@ namespace ChartAndGraph
                 pieObject = new GameObject();
             else
                 pieObject = GameObject.Instantiate(Prefab.gameObject);
-            ChartCommon.EnsureComponent<RectTransform>(pieObject);
             ChartCommon.EnsureComponent <CanvasRenderer>(pieObject);
             return ChartCommon.EnsureComponent<PieCanvasGenerator>(pieObject);
 

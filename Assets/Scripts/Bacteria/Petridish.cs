@@ -83,7 +83,6 @@ namespace Bacteria
                 return false;
         }
 
-
         //Private Methods//
         /*
         * Monitors the growth of the colonies and based on the IProgress: generates new cells, 
@@ -133,7 +132,6 @@ namespace Bacteria
                 double death = 144.53 * Ea * Math.Log(timePerDivision * 60 * i) - 0.2341;
                 ReportProgress(Grow(death));
             }
-
             logs.text += "...Simulation Complete.\n";
             jsonDataSet.SaveIntoJson();
             trialList.NewTrial(jsonDataSet.ParseJSON(trialNumber), trialNumber);

@@ -617,18 +617,7 @@ namespace ChartAndGraph
         {
             SetCurveInitialPoint(category, x,ChartDateUtility.DateToValue(y), pointSize);
         }
-        public void SetCategoryViewOrder(string category, int viewOrder)
-        {
-            if (mData.ContainsKey(category) == false)
-            {
-                Debug.LogWarning("Invalid category name. Make sure the category is present in the graph");
-                return;
-            }
 
-            CategoryData data = (CategoryData)mData[category];
-            data.ViewOrder = viewOrder;
-            RaiseDataChanged();
-        }
         public void SetCurveInitialPoint(string category, double x, double y,double pointSize = -1f)
         {
             if (mData.ContainsKey(category) == false)
@@ -976,7 +965,7 @@ namespace ChartAndGraph
         {
             get
             {
-                return mData.Values.Select(x=>(CategoryData)x).OrderBy(x=>x.ViewOrder);
+                return mData.Values.Select(x=>(CategoryData)x);
             }
         }
     }

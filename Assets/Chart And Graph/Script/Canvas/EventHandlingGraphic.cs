@@ -446,6 +446,5 @@ namespace ChartAndGraph
                 }
             }
         }
-
     }
 }

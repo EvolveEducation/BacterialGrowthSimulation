@@ -15,7 +15,7 @@ public class MultipleGraphDemo : MonoBehaviour
         if (Graph == null) // the ChartGraph info is obtained via the inspector
             return;
 
-      //  List<DoubleVector2> animationPoints = new List<DoubleVector2>();
+        List<DoubleVector2> animationPoints = new List<DoubleVector2>();
         float x = 0f;
         Graph.HorizontalValueToStringMap.Add(10, "Ten");
         Graph.VerticalValueToStringMap.Add(10, "$$");
@@ -25,8 +25,7 @@ public class MultipleGraphDemo : MonoBehaviour
         for (int i = 0; i < TotalPoints; i++)  //add random points to the graph
         {
             Graph.DataSource.AddPointToCategory("Player 1", System.DateTime.Now + System.TimeSpan.FromDays(x), Random.value * 20f + 10f); // each time we call AddPointToCategory 
-            Graph.DataSource.AddPointToCategory("Player 2", System.DateTime.Now + System.TimeSpan.FromDays(x), Random.value * 20f + 10f); // each time we call AddPointToCategory 
-//            animationPoints.Add(new DoubleVector2(ChartDateUtility.DateToValue(System.DateTime.Now + System.TimeSpan.FromDays(x)), Random.value * 10f));
+            animationPoints.Add(new DoubleVector2(ChartDateUtility.DateToValue(System.DateTime.Now + System.TimeSpan.FromDays(x)), Random.value * 10f));
             x += 3;
         }
 

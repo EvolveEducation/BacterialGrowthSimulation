@@ -54,7 +54,6 @@ MonoBehaviour:
   BarChart: []
   GraphChart: []
   RadarChart: []
-  PyramidChart: []
   infoText: {fileID: 114000011646866538}
 --- !u!1 &1000012108601794
 GameObject:

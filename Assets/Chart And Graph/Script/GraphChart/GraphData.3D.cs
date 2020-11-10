@@ -15,7 +15,6 @@ namespace ChartAndGraph
         {
             result = true;
         }
-
         public void AddCategory3DGraph(string category, PathGenerator linePrefab, Material lineMaterial, double lineThickness, MaterialTiling lineTiling, FillPathGenerator fillPrefab, Material innerFill, bool strechFill, GameObject pointPrefab, Material pointMaterial, double pointSize, double depth, bool isCurve, int segmentsPerCurve)
         {
             AddInnerCategoryGraph( category,  linePrefab,  lineMaterial,  lineThickness,  lineTiling,  fillPrefab,  innerFill,  strechFill,  pointPrefab,  pointMaterial,  pointSize,  depth,  isCurve,  segmentsPerCurve);
@@ -60,20 +59,22 @@ namespace ChartAndGraph
             data.Depth = depth;
             RaiseDataChanged();
         }
-
         public static void AddPointToCategoryWithLabelRealtime(GraphChartBase chart, string category, DateTime x, double y, double slideTime = 0, double pointSize = -1, string xLabel = null, string yLabel = null)
         {
             AddPointToCategoryWithLabelRealtime(chart, category, ChartDateUtility.DateToValue(x), y, slideTime, pointSize, xLabel, yLabel);
         }
-
         public static void AddPointToCategoryWithLabelRealtime(GraphChartBase chart, string category, double x, DateTime y, double slideTime = 0, double pointSize = -1, string xLabel = null, string yLabel = null)
         {
             AddPointToCategoryWithLabelRealtime(chart, category, x, ChartDateUtility.DateToValue(y), slideTime, pointSize, xLabel, yLabel);
         }
-
         public static void AddPointToCategoryWithLabelRealtime(GraphChartBase chart, string category, DateTime x, DateTime y, double slideTime = 0, double pointSize = -1, string xLabel = null, string yLabel = null)
         {
             AddPointToCategoryWithLabelRealtime(chart, category, ChartDateUtility.DateToValue(x), ChartDateUtility.DateToValue(y), slideTime, pointSize, xLabel, yLabel);
+        }
+
+        internal void AddPointToCategory(string v, double x, object p)
+        {
+            throw new NotImplementedException();
         }
 
         public static void AddPointToCategoryWithLabelRealtime(GraphChartBase chart, string category, double x, double y, double slideTime = 0, double pointSize = -1, string xLabel = null, string yLabel = null)

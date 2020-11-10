@@ -133,13 +133,10 @@ namespace ChartAndGraph
             double y = rect.y + rect.height * point.y;
             return new DoubleVector4(x, y, point.z, 0.0);
         }
-        internal static void HideObjectEditor(GameObject obj, bool hideMode)
-        {
-            obj.hideFlags = HideFlags.DontSaveInEditor | HideFlags.HideInHierarchy | HideFlags.HideInInspector;
-        }
+
         internal static void HideObject(GameObject obj,bool hideMode)
-        {
-           // return;
+        { 
+            //return;
             if (IsInEditMode == true)
             {
                 obj.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector | HideFlags.NotEditable | HideFlags.DontSaveInBuild;
@@ -410,7 +407,7 @@ namespace ChartAndGraph
                 TextObj = direction.Text.gameObject;
                 if (relativeFrom != null)
                     direction.SetRelativeTo(relativeFrom, billboard.transform);
-              //  else
+                else
                     direction.SetDirection(angle);
             }
             // if (parentTransform != null && billboard.transform.parent != parentTransform)
@@ -435,9 +432,7 @@ namespace ChartAndGraph
             GameObject UIText = (GameObject)GameObject.Instantiate(prefab.gameObject);
             GameObject billboard = new GameObject();
             ChartCommon.HideObject(billboard, hideHirarechy);
-            if(parentTransform.GetComponent<RectTransform>())
-                billboard.AddComponent<RectTransform>();
-            
+
             if (parentTransform != null)
             {
                 billboard.transform.SetParent(parentTransform, false);
@@ -455,7 +450,7 @@ namespace ChartAndGraph
                 obj = direction.Text.gameObject;
                 if (relativeFrom != null)
                     direction.SetRelativeTo(relativeFrom, billboard.transform);
-              //  else
+                else
                     direction.SetDirection(angle);
             }
 

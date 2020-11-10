@@ -12,7 +12,7 @@ namespace ChartAndGraph
     /// data source for bar charts
     /// </summary>
     [Serializable]
-    public class BarData : AbstractChartData,IInternalBarData, IChartData
+    public class BarData : AbstractChartData, IInternalBarData, IChartData
     {
 
         [Serializable]
@@ -70,7 +70,7 @@ namespace ChartAndGraph
         /// </summary>
         /// <param name="prevName"></param>
         /// <param name="newName"></param>
-        public void RenameCategory(string prevName,string newName)
+        public void RenameCategory(string prevName, string newName)
         {
             mDataSource.Columns[prevName].Name = newName;
             RaisePropertyUpdated();
@@ -81,7 +81,7 @@ namespace ChartAndGraph
         /// </summary>
         /// <param name="prevName"></param>
         /// <param name="newName"></param>
-        public void RenameGroup(string prevName,string newName)
+        public void RenameGroup(string prevName, string newName)
         {
             mDataSource.Rows[prevName].Name = newName;
             RaisePropertyUpdated();
@@ -260,7 +260,7 @@ namespace ChartAndGraph
             }
             int totalRows = mDataSource.Rows.Count;
             mGroups = new string[totalRows];
-            for(int i=0; i< totalRows; i++)
+            for (int i = 0; i < totalRows; i++)
                 mGroups[i] = mDataSource.Rows[i].Name;
 
             double[,] raw = mDataSource.getRawData();
@@ -295,16 +295,16 @@ namespace ChartAndGraph
                 AddCategory(mCategories[i].Name, mCategories[i].Materials);
             }
             for (int i = 0; i < mGroups.Length; i++)
-                AddGroup(mGroups[i]);
+                AddCategory(mGroups[i]);
 
-            for(int i=0; i< mData.Length; i++)
+            for (int i = 0; i < mData.Length; i++)
             {
                 try
                 {
                     DataEntry entry = mData[i];
                     mDataSource.SetValue(entry.ColumnName, entry.GroupName, entry.Amount);
                 }
-                catch(Exception)
+                catch (Exception)
                 {
 
                 }
@@ -332,7 +332,7 @@ namespace ChartAndGraph
         public void ClearGroups()
         {
             string[] groups = mDataSource.Rows.Select(x => x.Name).ToArray();
-            foreach(string s in groups)
+            foreach (string s in groups)
             {
                 RemoveGroup(s);
             }
@@ -373,23 +373,23 @@ namespace ChartAndGraph
         /// </summary>
         /// <param name="name">the name of the category</param>
         /// <param name="material">the dynamic material of the category. dynamic materials allows setting the material for different events</param>
-        public void AddCategory(string name, ChartDynamicMaterial material,int position)
+        public void AddCategory(string name, ChartDynamicMaterial material, int position)
         {
             ChartDataColumn column = new ChartDataColumn(name);
             column.Material = material;
-            mDataSource.mColumns.Insert(position,column);
+            mDataSource.mColumns.Insert(position, column);
         }
         /// <summary>
         /// moves the category to a new position
         /// </summary>
         /// <param name="name"></param>
         /// <param name="newPosition"></param>
-        public void MoveCategory(string name,int newPosition)
+        public void MoveCategory(string name, int newPosition)
         {
             mDataSource.mColumns.Move(name, newPosition);
         }
-        
-        public void SwitchCategoryPositions(string firstCategory,string secondCategory)
+
+        public void SwitchCategoryPositions(string firstCategory, string secondCategory)
         {
             mDataSource.mColumns.SwitchPositions(firstCategory, secondCategory);
         }
@@ -407,16 +407,16 @@ namespace ChartAndGraph
             mDataSource.mColumns.Add(column);
         }
 
-        public void SetCategoryIndex(string name,int index)
+        public void SetCategoryIndex(string name, int index)
         {
             ChartDataColumn col = mDataSource.mColumns[name];
             double[] values = new double[TotalGroups];
-            for(int i=0; i<TotalGroups; i++)
+            for (int i = 0; i < TotalGroups; i++)
             {
                 string g = GetGroupName(i);
                 values[i] = GetValue(name, g);
             }
-            
+
             mDataSource.Columns.Remove(col);
             mDataSource.Columns.Insert(index, col);
             for (int i = 0; i < TotalGroups; i++)
@@ -431,7 +431,7 @@ namespace ChartAndGraph
         /// </summary>
         /// <param name="category">the name of the category</param>
         /// <param name="material">the material of the category</param>
-        public void SetMaterial(string category,Material material)
+        public void SetMaterial(string category, Material material)
         {
             SetMaterial(category, new ChartDynamicMaterial(material));
         }
@@ -445,7 +445,7 @@ namespace ChartAndGraph
         /// </summary>
         /// <param name="category">the name of the category</param>
         /// <param name="material">the dynamic material of the category. dynamic materials allows setting the material for different events</param>
-        public void SetMaterial(string category,ChartDynamicMaterial material)
+        public void SetMaterial(string category, ChartDynamicMaterial material)
         {
             mDataSource.Columns[category].Material = material;
             RaisePropertyUpdated();
@@ -480,7 +480,7 @@ namespace ChartAndGraph
         /// in order to compare the resources the players have gather during a level
         /// </summary>
         /// <param name="name"></param>
-        public void AddGroup(string name)
+        public void AddCategory(string name)
         {
             mDataSource.Rows.Add(new ChartDataRow(name));
         }
@@ -491,7 +491,7 @@ namespace ChartAndGraph
         /// <param name="category">the category name</param>
         /// <param name="group">the group name</param>
         /// <returns></returns>
-        public double GetValue(string category,string group)
+        public double GetValue(string category, string group)
         {
             return mDataSource.GetValue(category, group);
         }
@@ -508,12 +508,12 @@ namespace ChartAndGraph
             curve.postWrapMode = WrapMode.Once;
             curve.preWrapMode = WrapMode.Once;
         }
-        public void RestoreCategory(string name,object obj)
+        public void RestoreCategory(string name, object obj)
         {
             var cat = (CategoryData)obj;
             SetMaterial(name, cat.Materials);
         }
-        public void SlideValue(string category, string group, double slideTo,float totalTime, AnimationCurve curve)
+        public void SlideValue(string category, string group, double slideTo, float totalTime, AnimationCurve curve)
         {
             try
             {
@@ -540,10 +540,10 @@ namespace ChartAndGraph
             }
         }
 
-        public void SlideValue(string category,string group,double slideTo,float time)
+        public void SlideValue(string category, string group, double slideTo, float time)
         {
             try
-            { 
+            {
                 RemoveSlider(category, group);
                 Slider s = new Slider();
                 s.category = category;
@@ -566,12 +566,12 @@ namespace ChartAndGraph
         /// <param name="category">the category name</param>
         /// <param name="group">the group name</param>
         /// <param name="amount">the value fo the bar</param>
-        public void SetValue(string category,string group,double amount)
+        public void SetValue(string category, string group, double amount)
         {
             RemoveSlider(category, group);
             SetValueInternal(category, group, amount);
         }
-        protected override void SetValueInternal(string category, string group, double amount)            
+        protected override void SetValueInternal(string category, string group, double amount)
         {
             try
             {

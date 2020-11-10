@@ -71,18 +71,9 @@ namespace ChartAndGraph
                 //float dMin = (float)((IInternalGraphData)Data).GetMinValue(axis, true);
                 double scrolling = dMax - sMax;
                 if (axis == 1)
-                {
-                    if (ScrollableData.VerticalViewSize < 0)
-                        scrolling += ScrollableData.VerticalViewSize;
-
                     verticalScrolling = scrolling;
-                }
                 else if (axis == 0)
-                {
-                    if (ScrollableData.HorizontalViewSize < 0)
-                        scrolling += ScrollableData.HorizontalViewSize;
                     horizontalScrolling = scrolling;
-                }
                 return scrolling;
             }
             if (axis == 1)
@@ -116,7 +107,7 @@ namespace ChartAndGraph
                 d.Clear();
         }
         [HideInInspector]
-     //   [SerializeField]
+        [SerializeField]
         protected bool scrollable = true;
 
         public bool Scrollable
@@ -124,7 +115,7 @@ namespace ChartAndGraph
             get { return scrollable; }
             set
             {
-                scrollable = true;// value;
+                scrollable = value;
                 Invalidate();
             }
         }
@@ -267,13 +258,9 @@ namespace ChartAndGraph
 
         private Vector3 PointShift
         {
-            get {
-                if(IsCanvas)
-                    return CanvasFitOffset;
-                return new Vector3();
-            }
+            get { return Vector3.zero; } // return CanvasFitOffset; }
         }
-        protected override Vector3 CanvasFitOffset { get { return new Vector3(0.5f, 0.5f, 0f); } }
+
         /// <summary>
         /// transform a point from axis units into world space. returns true on success and false on failure (failure should never happen for this implementation)
         /// </summary>
@@ -287,7 +274,6 @@ namespace ChartAndGraph
             Vector3 fit = PointShift;
             double minX, minY, maxX, maxY, xScroll, yScroll, xSize, ySize, xOut;
             GetScrollParams(out minX, out minY, out maxX, out maxY, out xScroll, out yScroll, out xSize, out ySize, out xOut);
-
             double resX = (((x - xScroll) / xSize)- fit.x) * ((IInternalUse)this).InternalTotalWidth;
             double resY = (((y-yScroll) / ySize) - fit.y) * ((IInternalUse)this).InternalTotalHeight;
             double resZ = 0.0;
@@ -344,15 +330,14 @@ namespace ChartAndGraph
         /// <returns></returns>
         public bool PointToClient(Vector3 worldPoint, out double x, out double y)
         {
-            Vector3 fit = PointShift;
             double minX, minY, maxX, maxY, xScroll, yScroll, xSize, ySize, xOut;
             GetScrollParams(out minX, out minY, out maxX, out maxY, out xScroll, out yScroll, out xSize, out ySize, out xOut);
             Transform t = transform;
             if (FixPosition != null)
                 t = FixPosition.transform;
             worldPoint = t.InverseTransformPoint(worldPoint);
-            x = xScroll + xSize * ((((double)worldPoint.x) / ((IInternalUse)this).InternalTotalWidth) + fit.x);
-            y = yScroll + ySize * ((((double)worldPoint.y) / ((IInternalUse)this).InternalTotalHeight) + fit.y);
+            x = xScroll + xSize * (((double)worldPoint.x) / ((IInternalUse)this).InternalTotalWidth);
+            y = yScroll + ySize * (((double)worldPoint.y) / ((IInternalUse)this).InternalTotalHeight);
             return true;
         }
 

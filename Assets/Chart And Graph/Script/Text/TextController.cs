@@ -59,18 +59,11 @@ public class TextController : MonoBehaviour
 
     private void Canvas_willRenderCanvases()
     {
-        
-        if (this == null)
-        {
-            Canvas.willRenderCanvases -= Canvas_willRenderCanvases;
-            return;
-        }
         ApplyTextPosition();
     }
 
     void EnsureCanvas()
     {
-
         if (mCanvas == null)
         {
             mCanvas = GetComponentInParent<Canvas>();
@@ -286,45 +279,38 @@ public class TextController : MonoBehaviour
 
     public void ApplyTextPosition()
     {
+        //if (mUnderCanvas)
+        //{
         Camera = EnsureCamera();
-        if (mCanvas == null)
+        if (Camera == null || mCanvas == null)
             return;
-        float scale = 1f;
-        if (Camera != null)
-        { 
-            if (mParent != null && (mParent.VRSpaceText || mParent.PaperEffectText) && OwnsCanvas)
-            {
-                Vector3 difVector = new Vector3(transform.position.x, 0, transform.position.z) - new Vector3(Camera.transform.position.x, 0, Camera.transform.position.z);
-                if (difVector != Vector3.zero && mParent.PaperEffectText == false)
-                {
-                    mCanvas.transform.rotation = Quaternion.LookRotation(difVector, Vector3.up);
-                }
-
-                //            mCanvas.transform.rotation = Camera.transform.rotation;
-                mCanvas.transform.localScale = new Vector3(mParent.VRSpaceScale, mParent.VRSpaceScale, mParent.VRSpaceScale);
-            }
-
-
-            if (mPrivateParent != null && mPrivateParent.KeepOrthoSize)
-            {
-
-                if (Camera != null && Camera.orthographic && Camera.orthographicSize > 0.1f)
-                {
-                    scale = 5f / Camera.orthographicSize;
-                }
-            }
-            scale *= mInnerScale;
-            if (Mathf.Abs(mPrevScale - scale) > 0.001f)
-            {
-                mInvalidated = false;
-            }
-            mPrevScale = scale;
-        }
-        else
+        if (mParent != null && (mParent.VRSpaceText || mParent.PaperEffectText) && OwnsCanvas)
         {
-            if (mParent == null || mParent.IsCanvas == false)
-                return;
+            Vector3 difVector = new Vector3(transform.position.x, 0, transform.position.z) - new Vector3(Camera.transform.position.x, 0, Camera.transform.position.z);
+            if (difVector != Vector3.zero && mParent.PaperEffectText == false)
+            {
+                mCanvas.transform.rotation = Quaternion.LookRotation(difVector, Vector3.up);
+            }
+
+            //            mCanvas.transform.rotation = Camera.transform.rotation;
+            mCanvas.transform.localScale = new Vector3(mParent.VRSpaceScale, mParent.VRSpaceScale, mParent.VRSpaceScale);
         }
+
+        float scale = 1f;
+        if (mPrivateParent != null && mPrivateParent.KeepOrthoSize)
+        {
+
+            if (Camera != null && Camera.orthographic && Camera.orthographicSize > 0.1f)
+            {
+                scale = 5f / Camera.orthographicSize;
+            }
+        }
+        scale *= mInnerScale;
+        if (Mathf.Abs(mPrevScale - scale) > 0.001f)
+        {
+            mInvalidated = false;
+        }
+        mPrevScale = scale;
         //if (mInvalidated == false) 
         // {
         mText.RemoveAll(x =>
