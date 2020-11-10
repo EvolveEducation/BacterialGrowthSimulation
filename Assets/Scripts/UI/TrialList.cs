@@ -23,7 +23,7 @@ public class TrialList : MonoBehaviour
 
         foreach (JSONColony colony in trial.colonies)
         {
-            texture.DrawCircle(new Color(1, 0.8941177f, 0.7411765f), colony.x, colony.y, colony.radius);
+            texture.DrawCircle(new Color(1, 0.8941177f, 0.7411765f), colony.x/2, colony.y/2, colony.radius/2);
         }
 
 
@@ -67,12 +67,9 @@ public static class Tex2DExtension
 {
     public static Texture2D DrawCircle(this Texture2D tex, Color col, int cx, int cy, double r)
     {
-        r /= 2;
-        cx /= 2;
-        cy /= 2;
         double i, angle, x1, y1;
 
-        for (int fill = 1; fill <= r; fill++)
+        for (double fill = 0; fill <= r; fill+=0.1)
         {
             for (i = 0; i < 360; i += 0.1)
             {

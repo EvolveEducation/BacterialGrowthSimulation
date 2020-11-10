@@ -8,6 +8,7 @@ public class SliderComponent : MonoBehaviour
     public Slider slider;
     public bool temp;
     public bool time;
+    public bool nm;
 
     public void SetSliderValue()
     {
@@ -20,7 +21,12 @@ public class SliderComponent : MonoBehaviour
             int remainder = (int) Math.Floor(Math.Abs(Math.Floor(slider.value) - slider.value) * 60);
             string rString = (remainder < 10) ? "0" + remainder : remainder.ToString();
             textComponent.text = Math.Floor(slider.value).ToString() + ":" + rString;
-        } else
+        } 
+        else if (nm)
+        {
+            textComponent.text = slider.value.ToString("0") + " nm";
+        }
+        else
         {
             textComponent.text = slider.value.ToString("0");
         }

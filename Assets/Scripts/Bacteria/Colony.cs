@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Bacteria
 {
@@ -42,20 +43,29 @@ namespace Bacteria
          * Each time cycle this is called. Emulates the growth of the colony.
          * @return List<Cell> returns a list of newly grown cells
          */
-        public List<Cell> GrowColony()
+        public Tuple<List<Cell>, int> GrowColony(double death)
         {
             List<Cell> cellsToGrow = new List<Cell>();
-            
-            //for loop
+            int dead = 0;
+
             foreach (Cell cell in activeCells.ToArray())
             {
-                if (cell.AvailableSpace.Count < 1)
+                if (Petridish.Instance.RNG.NextDouble() < death)
                 {
                     activeCells.Remove(cell);
+                    dead++;
                 }
                 else
                 {
-                    cellsToGrow.Add(cell);
+                    if (cell.AvailableSpace.Count < 1)
+                    {
+                        activeCells.Remove(cell);
+                        dead++;
+                    }
+                    else
+                    {
+                        cellsToGrow.Add(cell);
+                    }
                 }
             }
 
@@ -68,7 +78,7 @@ namespace Bacteria
 
             cells.AddRange(newCells);
             activeCells.AddRange(newCells);
-            return new List<Cell>(newCells);
+            return new Tuple<List<Cell>, int>(newCells, dead);
         }
     }
 }

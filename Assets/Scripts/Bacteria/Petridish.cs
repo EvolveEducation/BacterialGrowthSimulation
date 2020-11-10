@@ -13,11 +13,10 @@ namespace Bacteria
         public GameObject cellPrefab;
         public GameObject petriDish;
         public Button start;
-        public ToggleGroup uvLight;
-        public Slider numOfCells;
         public Text logs;
         public Toggle bleach;
-        public Toggle colorBlindness;
+        public Slider uvLight;
+        public Slider numOfCells;
         public Slider temperature;
         public Slider trialTime;
         public GraphChart graph;
@@ -35,7 +34,6 @@ namespace Bacteria
         private int timeMultipler;
         private int cellCount;
         private int trialNumber;
-        private int UVType; //0 = none, 1 = low, 2 = moderate, 3 = high
         private JSONBacteriaModel jsonDataSet;
 
         //MonoBehaviour//
@@ -93,48 +91,29 @@ namespace Bacteria
         */
         private void SimulationStart()
         {
-            UVType = 0;
             colonyList = new List<Colony>();
             jsonDataSet = ScriptableObject.CreateInstance<JSONBacteriaModel>();
             float adjustedX = temperature.value - 1.5f;
             double temperatureEstimate = (2.783e-16 * Math.Pow(adjustedX, 11)) - (4.0496e-9 * Math.Pow(adjustedX, 7)) + (0.00000517429 * Math.Pow(adjustedX, 5)) + (0.00150295 * Math.Pow(adjustedX, 3));
             timePerDivision = 70 / (temperatureEstimate / 100);
             int simulationLength = (int) Math.Floor((trialTime.value * 60) / timePerDivision);
-            
-            string uvType = "no";
 
-            if (uvLight.AnyTogglesOn())
-            {
-                foreach (Toggle t in uvLight.ActiveToggles())
-                    switch (t.name)
-                    {
-                        case "High UV Light":
-                            uvType = "high";
-                            UVType = 3;
-                            break;
-                        case "Mid UV Light":
-                            uvType = "moderate";
-                            UVType = 2;
-                            break;
-                        case "Low UV Light":
-                            uvType = "low";
-                            UVType = 1;
-                            break;
-                    }
-            }
+            double e = (6.022 * Math.Pow(10, 23)) * (6.62 * Math.Pow(10, -34)) * (3 * Math.Pow(10, 8));
+            double Ea = e / uvLight.value;
 
             if (bleach.isOn)
             {
                 if (20 < temperature.value && temperature.value < 30)
                 {
                     simulationLength /= 6;
-                } else
+                } 
+                else
                 {
                     simulationLength = 0;
                 }
             }
 
-            jsonDataSet.InstantiateJSON(trialNumber, bleach.isOn, uvType,
+            jsonDataSet.InstantiateJSON(trialNumber, bleach.isOn, (int)uvLight.value,
                 temperature.value, trialTime.value, (int)numOfCells.value);
 
             foreach (Transform child in petriDish.transform)
@@ -149,13 +128,10 @@ namespace Bacteria
             SpreadCells((int) numOfCells.value);
             InitializeGraph((int) numOfCells.value);
 
-            for (int i = 0; i < simulationLength; i++)
+            for (int i = 1; i <= simulationLength; i++)
             {
-                ReportProgress(Grow());
-                if (1)
-                {
-                    deathRate = 0.01(a - 8) ^{ 3} +0.0257(a - 8) ^ 4
-                }
+                double death = 144.53 * Ea * Math.Log(timePerDivision * 60 * i) - 0.2341;
+                ReportProgress(Grow(death));
             }
 
             logs.text += "...Simulation Complete.\n";
@@ -181,9 +157,9 @@ namespace Bacteria
             logs.text = "";
             logs.text += "Loading " + jsonDish.dishName + "...\n";
             logs.text += "This trial had:\n";
-            logs.text += jsonDish.startingCells + " starting cells,\n";
+            logs.text += jsonDish.startingCells + " starting colonies,\n";
             logs.text += "a temperature of " + jsonDish.temp.ToString("0.0") + "°C,\n";
-            logs.text += "grown under " + jsonDish.UV + " UV light,\n";
+            logs.text += "grown under light with a wavelength of " + jsonDish.UV + " nm,\n";
             logs.text += jsonDish.bleach ? "with bleach,\n" : "with no bleach,\n";
             int remainder = (int)Math.Floor(Math.Abs(Math.Floor(jsonDish.time) - jsonDish.time) * 60);
             string rString = (remainder < 10) ? "0" + remainder : remainder.ToString();
@@ -213,16 +189,18 @@ namespace Bacteria
          * Grows each colony.
          * @return a list of the newly grown cells
          */
-        private List<Cell> Grow()
+        private Tuple<List<Cell>, int> Grow(double death)
         {
             List<Cell> newCells = new List<Cell>();
-
+            int dead = 0;
             foreach (Colony c in colonyList)
             {
-                newCells.AddRange(c.GrowColony());
+                Tuple<List<Cell>, int> results = c.GrowColony(death);
+                newCells.AddRange(results.Item1);
+                dead += results.Item2;
             }
 
-            return newCells;
+            return new Tuple<List<Cell>, int>(newCells, dead);
         }
 
         /*
@@ -258,18 +236,25 @@ namespace Bacteria
          * Updates the graph, log, and petridish.
          * @param cells is a list a of new cells on the petridish 
          */
-        private void ReportProgress(List<Cell> cells)
+        private void ReportProgress(Tuple<List<Cell>, int> cells)
         {
-            logs.text += cells.Count + " new cells.\n";
-            
-            foreach (Cell cell in cells)
+            if (cells.Item1.Count > 0)
             {
-                cellPrefab.transform.position = new Vector3(cell.X / dishNormailzer, 0, cell.Y / dishNormailzer);
-                Instantiate(cellPrefab, petriDish.transform);
+                logs.text += cells.Item1.Count + " new cells\n";
+                foreach (Cell cell in cells.Item1)
+                {
+                    cellPrefab.transform.position = new Vector3(cell.X / dishNormailzer, 0, cell.Y / dishNormailzer);
+                    Instantiate(cellPrefab, petriDish.transform);
+                }
+                cellCount += cells.Item1.Count;
+                LogData(cellCount, (timePerDivision / 60) * timeMultipler);
+                PopulateGraph(cellCount, timePerDivision / 60);
             }
-            cellCount += cells.Count;
-            LogData(cellCount, (timePerDivision / 60) * timeMultipler);
-            PopulateGraph(cellCount, timePerDivision / 60);
+            if (cells.Item2 > 0)
+            {
+                logs.text += cells.Item2 + " dead or inactive cells\n";
+            }
+            logs.text += "\n";
         }
 
         /*

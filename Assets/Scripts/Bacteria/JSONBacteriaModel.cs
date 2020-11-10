@@ -13,7 +13,7 @@ public class JSONBacteriaModel : ScriptableObject
      * Used to create a new instance of a petridish trial
      * @param trialNumber n>0 that represents the current trial running
      */
-    public void InstantiateJSON(int trialNumber, bool b, string uvType, float temp, float time, int cells)
+    public void InstantiateJSON(int trialNumber, bool b, int uvType, float temp, float time, int cells)
     {
         petriDish = new JSONPetriDish
         {
@@ -95,7 +95,7 @@ public class JSONPetriDish
     public float time;
     public float temp;
     public bool bleach;
-    public string UV;
+    public int UV;
     public int trialID;
     public string dishName;
     public int finalCellCount;
