@@ -5180,7 +5180,7 @@ MonoBehaviour:
   backBtn: {fileID: 1003707393}
   scoreTxt: {fileID: 1222287245}
   quizTitleTxt: {fileID: 1080052872}
-  browseBtn: {fileID: 1087995433}
+  browseBtn: {fileID: 657225623}
   questionInput: {fileID: 1207326336}
   markForReviewBtn: {fileID: 194101847}
   confirmTitle: {fileID: 1047583328}
@@ -14454,7 +14454,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 787948849}
   m_HandleRect: {fileID: 787948848}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
