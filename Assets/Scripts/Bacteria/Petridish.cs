@@ -83,6 +83,11 @@ namespace Bacteria
                 return false;
         }
 
+        public void Test(GraphChart.GraphEventArgs args)
+        {
+            Debug.Log(args.Category);
+        }
+
         //Private Methods//
         /*
         * Monitors the growth of the colonies and based on the IProgress: generates new cells, 
@@ -266,6 +271,7 @@ namespace Bacteria
             graph.DataSource.ClearAndMakeBezierCurve("CellGrowth");
             graph.DataSource.SetCurveInitialPoint("CellGrowth", 0, startingCells);
             graph.DataSource.EndBatch();
+            graph.PointClicked.AddListener(Test);
         }
 
         /*
